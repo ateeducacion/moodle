@@ -1653,20 +1653,35 @@ function xmldb_main_upgrade($oldversion) {
         $batchsize = 50000;
         $lastid = 0;
         do {
+            // We only need the ID, but can't pass limits to get_fieldset_sql, so we use get_records_sql.
             $questions = $DB->get_records_sql(
                 "SELECT id FROM {question} WHERE qtype = 'random' AND id > :lastid ORDER BY id",
                 ['lastid' => $lastid],
                 0,
                 $batchsize,
             );
-            $recordcount = 0;
-            foreach ($questions as $question) {
-                $lastid = $question->id;
-                question_delete_question($question->id);
-                $recordcount++;
+            $recordcount = count($questions);
+            $questionids = array_keys($questions);
+            if ($recordcount > 0) {
+                [$insql, $params] = $DB->get_in_or_equal($questionids);
+                $questionversionsandentires = $DB->get_records_select_menu(
+                    'question_versions',
+                    'questionid ' . $insql,
+                    $params,
+                    fields: 'id, questionbankentryid'
+                );
+                $versionids = array_keys($questionversionsandentires);
+                $entryids = array_unique(array_values($questionversionsandentires));
+                // No need to call question_delete_question, it is safe to delete the records directly. See MDL-88393.
+                // These are all random questions, so have no files or other qtype-specific records to clean up.
+                $DB->delete_records_list('question_versions', 'id', $versionids);
+                $DB->delete_records_list('question_bank_entries', 'id', $entryids);
+                $DB->delete_records_list('question', 'id', $questionids);
+                // Reset timeout after each batch to avoid timeouts on large sites.
+                upgrade_set_timeout();
+                // Set the start point for the next batch. IDs were fetched in order, so we use the last one we got.
+                $lastid = end($questionids);
             }
-            // Reset timeout after each batch to avoid timeouts on large sites.
-            upgrade_set_timeout();
         } while ($recordcount === $batchsize);
         // Finally, uninstall qtype_random as it's been removed.
         uninstall_plugin('qtype', 'random');
@@ -1871,6 +1886,60 @@ function xmldb_main_upgrade($oldversion) {
         $DB->set_field_select('h5p', 'filtered', null, $DB->sql_compare_text('filtered') . ' IS NOT NULL');
 
         upgrade_main_savepoint(true, 2026052500.03);
+    }
+
+    if ($oldversion < 2026060500.01) {
+        [$informatsql, $params] = $DB->get_in_or_equal(['weeks', 'topics'], SQL_PARAMS_NAMED);
+
+        $insert = <<<EOF
+        INSERT INTO {course_format_options} (
+            courseid,
+            format,
+            sectionid,
+            name,
+            value
+        ) SELECT
+            c.id as courseid,
+            c.format AS format,
+            0 AS sectionid,
+            :settingname1 AS name,
+            0 AS value
+            FROM {course} c
+            LEFT JOIN {course_format_options} cfo
+                ON cfo.courseid = c.id
+                AND cfo.name = :settingname2
+            WHERE cfo.id IS NULL AND c.format $informatsql
+        EOF;
+
+        $params += [
+            'settingname1' => \core_courseformat\local\linearnavigationsettings::SETTING_ENABLE_LINEAR_NAV,
+            'settingname2' => \core_courseformat\local\linearnavigationsettings::SETTING_ENABLE_LINEAR_NAV,
+        ];
+        $DB->execute($insert, $params);
+        upgrade_main_savepoint(true, 2026060500.01);
+    }
+
+    if ($oldversion < 2026061600.01) {
+        // Define field deletioninprogress to be added to course.
+        $table = new xmldb_table('course');
+        $field = new xmldb_field(
+            'deletioninprogress',
+            XMLDB_TYPE_INTEGER,
+            '1',
+            null,
+            null,
+            null,
+            null,
+            'enableaitools'
+        );
+
+        // Conditionally launch add field deletioninprogress.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2026061600.01);
     }
 
     return true;

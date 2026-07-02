@@ -25,6 +25,7 @@
 
 namespace core;
 
+use action_link;
 use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
@@ -928,6 +929,37 @@ final class moodle_page_test extends \advanced_testcase {
             $page->get_ai_visibility_hint(),
             'AI visibility hint should be true after being re-enabled.'
         );
+    }
+
+    /**
+     * Test that supplementary content resets after calling reset_theme_and_output.
+     */
+    public function test_reset_theme_and_output_resets_supplementarycontent(): void {
+        $page = new moodle_page();
+        $page->set_supplementary_content(new action_link(new \moodle_url('/'), 'link'));
+        $this->assertNotNull($page->get_supplementary_content());
+        $page->reset_theme_and_output();
+        $this->assertNull($page->get_supplementary_content());
+    }
+
+    /**
+     * Test that sticky footer setting resets after calling reset_theme_and_output.
+     */
+    public function test_reset_theme_and_output_resets_sticky_footer_flag(): void {
+        $page = new moodle_page();
+        $page->set_has_sticky_footer(true);
+        $page->reset_theme_and_output();
+        $this->assertFalse($page->has_sticky_footer());
+    }
+
+    /**
+     * Test that navigation footer setting resets after calling reset_theme_and_output.
+     */
+    public function test_reset_theme_and_output_resets_navigation_footer_flag(): void {
+        $page = new moodle_page();
+        $page->set_show_navigation_footer(false);
+        $page->reset_theme_and_output();
+        $this->assertTrue($page->should_show_navigation_footer());
     }
 }
 

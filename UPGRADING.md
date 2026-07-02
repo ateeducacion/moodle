@@ -45,6 +45,18 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
   Note: disabling cookie support after it has been enabled is not recommended. If doing so you will need to determine whether to terminate the current session, or close it.
 
   For more information see [MDL-87174](https://tracker.moodle.org/browse/MDL-87174)
+- The `moodle_page` class now includes `set_has_sticky_footer()` and `has_sticky_footer()` to track sticky footer presence and prevent redundant renders.
+
+  For more information see [MDL-87302](https://tracker.moodle.org/browse/MDL-87302)
+- Added `moodle_page::set_show_navigation_footer(bool $show)` to control whether the sticky navigation footer is rendered. Use $PAGE->set_show_navigation_footer(false); to suppress the footer on pages where it is not required.
+
+  For more information see [MDL-87575](https://tracker.moodle.org/browse/MDL-87575)
+- Added new 'url' optional parameter to `core\output\action_menu\subpanel` so subpanel menu elements can have their own link.
+
+  For more information see [MDL-88312](https://tracker.moodle.org/browse/MDL-88312)
+- Added new `core\output\submenu` renderable, that can be added to a `core\output\action_menu\subpanel` to create menu sub-levels.
+
+  For more information see [MDL-88312](https://tracker.moodle.org/browse/MDL-88312)
 - Two new AMD modules are now available. `core/import` lets AMD code do a native ESM dynamic import without Babel rewriting it. `core/component` provides `appendToDom` and `prependToDom` to mount React components into the DOM, which are then picked up automatically by `react_autoinit`.
 
   For more information see [MDL-88505](https://tracker.moodle.org/browse/MDL-88505)
@@ -69,12 +81,24 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
   | `is_restored_user()` | `\core\authentication::is_restored_user()` |
 
   For more information see [MDL-88580](https://tracker.moodle.org/browse/MDL-88580)
+- The `moodle_page` class now includes `set_supplementary_content()` and `get_supplementary_content()` methods to inject and retrieve secondary content within the sticky footer.
+
+  For more information see [MDL-88601](https://tracker.moodle.org/browse/MDL-88601)
+
+#### Changed
+
+- The `search` landmark role in the `core/search_input_auto` template is enclosed within a `searchrole` Mustache block so that templates that use this template can override and remove the `search` landmark role when deemed unnecessary.
+
+  For more information see [MDL-88833](https://tracker.moodle.org/browse/MDL-88833)
 
 #### Deprecated
 
 - The `FEATURE_GROUPMEMBERSONLY` constant has been deprecated and is no longer supported. It should be removed from any plugin code.
 
   For more information see [MDL-83231](https://tracker.moodle.org/browse/MDL-83231)
+- `get_dataroot_size` in `\core\hub\registration` has been deprecated in favour of `get_filepool_usage`, which approximates disk usage from the database rather than scanning the dataroot directory, making it significantly more performant on large sites.
+
+  For more information see [MDL-88805](https://tracker.moodle.org/browse/MDL-88805)
 
 ### core_admin
 
@@ -106,6 +130,20 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
   Each method throws a specific exception from `\core_auth\exception` on failure.
 
   For more information see [MDL-88580](https://tracker.moodle.org/browse/MDL-88580)
+
+### core_courseformat
+
+#### Added
+
+- The `\core_courseformat\base::uses_linear_navigation()` method has been introduced to determine if a format supports linear navigation. Formats should override this to return true (optionally via a format setting) to enable the feature; it remains disabled by default.
+
+  For more information see [MDL-87302](https://tracker.moodle.org/browse/MDL-87302)
+- Two new steps have been added to simplify testing of linear navigation: the course linear navigation should/should not be visible
+
+  For more information see [MDL-87575](https://tracker.moodle.org/browse/MDL-87575)
+- Add a inline_help flag for course format setting elements.  When this flag is present in the setting definition, or set to true,  the help text is displayed as static text beneath the setting.
+
+  For more information see [MDL-88669](https://tracker.moodle.org/browse/MDL-88669)
 
 ### core_external
 
@@ -141,7 +179,23 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
   For more information see [MDL-81225](https://tracker.moodle.org/browse/MDL-81225)
 
+### core_filters
+
+#### Added
+
+- Rendered TeX/Algebra images are now stored using the File Storage API instead of the `$CFG->dataroot/filter/{tex,algebra}/` directory. A new `rendered_images` cache definition has been added to both `filter_tex` and `filter_algebra`. The upgrade step automatically migrates existing images from the legacy dataroot location to file storage and removes the old directory.
+
+  For more information see [MDL-87554](https://tracker.moodle.org/browse/MDL-87554)
+
 ### core_reportbuilder
+
+#### Added
+
+- The report `join` trait contains new `prepend_join[s]` methods, which are called from the base entity to ensure entity joins are automatically prepended to all entity columns, filters and conditions
+
+  Entity implementations no longer have to manually add boilerplace to add the same joins to their own columns, filters and conditions
+
+  For more information see [MDL-87405](https://tracker.moodle.org/browse/MDL-87405)
 
 #### Changed
 
@@ -156,6 +210,76 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - The base report `get_main_table()` method has been deprecated, calling code should instead call `get_main_table_sql()`
 
   For more information see [MDL-88397](https://tracker.moodle.org/browse/MDL-88397)
+
+### core_user
+
+#### Changed
+
+- The `user_convert_text_to_menu_items()` method now returns a typed array of `\core_user\output\user_action_menu\base` items
+
+  For more information see [MDL-88938](https://tracker.moodle.org/browse/MDL-88938)
+
+#### Deprecated
+
+- Consumers of the `\core_user\hook\extend_user_menu` hook class for extending the user menu should now call `add_menu_item()` on the hook instance, which accepts only a parameter of type `\core_user\output\user_action_menu\base`
+
+  The previous `add_navitem` method of the hook class has been deprecated in favour of the above
+
+  For more information see [MDL-88938](https://tracker.moodle.org/browse/MDL-88938)
+
+### core\task\adhoc_task
+
+#### Added
+
+- Added set_soft_retry_delay(), get_soft_retry_delay() and is_adhoc_task_delayed() methods. Call set_soft_retry_delay() from within an adhoc task's execute() method to request a soft retry via manager::adhoc_task_delayed() without marking the task as failed. Pass null for automatic exponential backoff or a positive integer for an explicit delay in seconds.
+
+  For more information see [MDL-79763](https://tracker.moodle.org/browse/MDL-79763)
+
+### core\task\manager
+
+#### Added
+
+- Added adhoc_task_delayed() method to allow an adhoc task to be retried after a delay without marking it as failed. The delay uses exponential backoff based on elapsed time since the task first started, capped at 24 hours.
+
+  For more information see [MDL-79763](https://tracker.moodle.org/browse/MDL-79763)
+
+### format_topics
+
+#### Added
+
+- The `enablelinearnav` setting has been introduced to control course linear navigation at the course level. A corresponding site-wide admin setting is also available to define the default value for newly created courses.
+
+  For more information see [MDL-87302](https://tracker.moodle.org/browse/MDL-87302)
+
+### format_weeks
+
+#### Added
+
+- The `enablelinearnav` setting has been introduced to control course linear navigation at the course level. A corresponding site-wide admin setting is also available to define the default value for newly created courses.
+
+  For more information see [MDL-87302](https://tracker.moodle.org/browse/MDL-87302)
+
+### mod_assign
+
+#### Added
+
+- Assignment override logic has been refactored and put in a new override_manager class. There are 3 new web services for managing assignment overrides: - mod_assign_save_overrides - mod_assign_get_overrides - mod_assign_delete_overrides
+
+  For more information see [MDL-86513](https://tracker.moodle.org/browse/MDL-86513)
+
+#### Deprecated
+
+- The delete_override, delete_all_overrides, move_group_override, reorder_group_overrides are now deprecated. Use the corresponding methods in the override_manager class instead: - override_manager::delete_override - override_manager::delete_all_overrides - override_manager::move_group_override - override_manager::reorder_group_overrides
+
+  For more information see [MDL-86513](https://tracker.moodle.org/browse/MDL-86513)
+
+### theme_boost
+
+#### Changed
+
+- The default UI typeface for Boost has changed from the system-ui font stack to Noto Sans. Noto Sans is now self-hosted under `theme/boost/fonts/` and declared via `@font-face` in `theme/boost/scss/moodle/fonts.scss`. The latin and latin-ext subsets are included (normal and italic, weight 100-900). The `$font-family-sans-serif` Bootstrap variable is now set from the `$mds-font-family-base` MDS token. Child themes that override `$font-family-sans-serif` are unaffected. Child themes that rely on the system-ui fallback behaviour will now render Noto Sans instead.
+
+  For more information see [MDL-88412](https://tracker.moodle.org/browse/MDL-88412)
 
 ## 5.2
 

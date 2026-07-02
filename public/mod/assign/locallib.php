@@ -109,13 +109,14 @@ require_once($CFG->dirroot . '/mod/assign/renderable.php');
 require_once($CFG->dirroot . '/mod/assign/gradingtable.php');
 require_once($CFG->libdir . '/portfolio/caller.php');
 
+use core\deprecation;
+use mod_assign\downloader;
 use mod_assign\event\submission_removed;
 use mod_assign\event\submission_status_updated;
-use \mod_assign\output\grading_app;
-use \mod_assign\output\assign_header;
-use \mod_assign\output\assign_submission_status;
+use mod_assign\output\assign_header;
+use mod_assign\output\assign_submission_status;
+use mod_assign\output\grading_app;
 use mod_assign\output\timelimit_panel;
-use mod_assign\downloader;
 
 /**
  * Standard base class for mod_assign (assignment types).
@@ -262,6 +263,15 @@ class assign {
      */
     public function set_is_marking(bool $value): void {
         $this->ismarking = $value;
+    }
+
+    /**
+     * Check if we are in marking mode.
+     *
+     * @return bool
+     */
+    public function is_marking(): bool {
+        return $this->ismarking;
     }
 
     /**
@@ -658,6 +668,7 @@ class assign {
                 $nextpageparams['action'] = 'grading';
             }
         } else if ($action == 'quickgrade') {
+            $PAGE->set_show_navigation_footer(false);
             $message = $this->process_save_quick_grades();
             $action = 'quickgradingresult';
         } else if ($action == 'saveextension') {
@@ -707,24 +718,30 @@ class assign {
         } else if ($action == 'viewpluginassignsubmission') {
             $o .= $this->view_plugin_content('assignsubmission');
         } else if ($action == 'editsubmission') {
+            $PAGE->set_show_navigation_footer(false);
             $PAGE->add_body_class('limitedwidth');
             $o .= $this->view_edit_submission_page($mform, $notices);
         } else if ($action == 'grader') {
+            $PAGE->set_show_navigation_footer(false);
             $o .= $this->view_grader();
         } else if ($action == 'marker') {
+            $PAGE->set_show_navigation_footer(false);
             $o .= $this->view_grader(true);
         } else if ($action == 'grading') {
             $o .= $this->view_grading_page();
         } else if ($action == 'downloadall') {
             $o .= $this->download_submissions();
         } else if ($action == 'submit') {
+            $PAGE->set_show_navigation_footer(false);
             $PAGE->add_body_class('limitedwidth');
             $o .= $this->check_submit_for_grading($mform);
         } else if ($action == 'grantextension') {
+            $PAGE->set_show_navigation_footer(false);
             $o .= $this->view_grant_extension($mform);
         } else if ($action == 'revealidentities') {
             $o .= $this->view_reveal_identities_confirm();
         } else if ($action == 'removesubmissionconfirm') {
+            $PAGE->set_show_navigation_footer(false);
             $PAGE->add_body_class('limitedwidth');
             $o .= $this->view_remove_submission_confirm();
         } else if ($action == 'plugingradingbatchoperation') {
@@ -929,7 +946,9 @@ class assign {
             $result = false;
         }
 
-        $this->delete_all_overrides();
+        // Delete all overrides.
+        $manager = new mod_assign\override_manager($this->get_instance(), $this->context);
+        $manager->delete_all_overrides();
 
         // Delete_records will throw an exception if it fails - so no need for error checking here.
         $DB->delete_records('assign_submission', array('assignment' => $this->get_instance()->id));
@@ -955,74 +974,41 @@ class assign {
     /**
      * Deletes a assign override from the database and clears any corresponding calendar events
      *
+     * @deprecated since Moodle 5.3 MDL-86513 - use \mod_assign\override_manager::delete_overrides_by_id() instead
+     * @todo MDL-87324 This will be removed in Moodle 6.0
      * @param int $overrideid The id of the override being deleted
      * @return bool true on success
      */
+    #[\core\attribute\deprecated(
+        replacement: '\mod_assign\override_manager::delete_overrides_by_id',
+        since: '5.3',
+        mdl: 'MDL-86513',
+    )]
     public function delete_override($overrideid) {
-        global $CFG, $DB;
+        deprecation::emit_deprecation([self::class, __FUNCTION__]);
 
-        require_once($CFG->dirroot . '/calendar/lib.php');
-
-        $cm = $this->get_course_module();
-        if (empty($cm)) {
-            $instance = $this->get_instance();
-            $cm = get_coursemodule_from_instance('assign', $instance->id, $instance->course);
-        }
-
-        $override = $DB->get_record('assign_overrides', array('id' => $overrideid), '*', MUST_EXIST);
-
-        // Delete the events.
-        $conds = array('modulename' => 'assign', 'instance' => $this->get_instance()->id);
-        if (isset($override->userid)) {
-            $conds['userid'] = $override->userid;
-            $cachekey = "{$cm->instance}_u_{$override->userid}";
-        } else {
-            $conds['groupid'] = $override->groupid;
-            $cachekey = "{$cm->instance}_g_{$override->groupid}";
-        }
-        $events = $DB->get_records('event', $conds);
-        foreach ($events as $event) {
-            $eventold = calendar_event::load($event);
-            $eventold->delete();
-        }
-
-        $DB->delete_records('assign_overrides', array('id' => $overrideid));
-        cache::make('mod_assign', 'overrides')->delete($cachekey);
-
-        // Set the common parameters for one of the events we will be triggering.
-        $params = array(
-            'objectid' => $override->id,
-            'context' => context_module::instance($cm->id),
-            'other' => array(
-                'assignid' => $override->assignid
-            )
-        );
-        // Determine which override deleted event to fire.
-        if (!empty($override->userid)) {
-            $params['relateduserid'] = $override->userid;
-            $event = \mod_assign\event\user_override_deleted::create($params);
-        } else {
-            $params['other']['groupid'] = $override->groupid;
-            $event = \mod_assign\event\group_override_deleted::create($params);
-        }
-
-        // Trigger the override deleted event.
-        $event->add_record_snapshot('assign_overrides', $override);
-        $event->trigger();
-
+        $manager = new mod_assign\override_manager($this->get_instance(), $this->context);
+        $manager->delete_overrides_by_id([$overrideid]);
         return true;
     }
 
     /**
      * Deletes all assign overrides from the database and clears any corresponding calendar events
+     *
+     * @deprecated since Moodle 5.3 MDL-86513 - use \mod_assign\override_manager::delete_all_overrides() instead
+     * @todo MDL-87324 This will be removed in Moodle 6.0
      */
+    #[\core\attribute\deprecated(
+        replacement: '\mod_assign\override_manager::delete_all_overrides',
+        since: '5.3',
+        mdl: 'MDL-86513',
+    )]
     public function delete_all_overrides() {
-        global $DB;
+        deprecation::emit_deprecation([self::class, __FUNCTION__]);
 
-        $overrides = $DB->get_records('assign_overrides', array('assignid' => $this->get_instance()->id), 'id');
-        foreach ($overrides as $override) {
-            $this->delete_override($override->id);
-        }
+        // Use override manager to delete all overrides.
+        $manager = new mod_assign\override_manager($this->get_instance(), $this->context);
+        $manager->delete_all_overrides();
     }
 
     /**
@@ -3293,6 +3279,10 @@ class assign {
             $workflowstate = null;
         }
 
+        if ($mark === '') {
+            $mark = null;
+        }
+
         // Validate the mark, using the same logic as from update_grade().
         $gradevalue = $this->get_instance()->grade;
 
@@ -4259,13 +4249,29 @@ class assign {
     /**
      * Get the mark object (if it exists) that corresponds to the specified marker and grade.
      *
-     * @param int $gradeid The assignment grade ID
-     * @param int $markerid The marker's user ID
-     * @return stdClass|false The assign_mark object or false if it doesn't exist
+     * @param int $gradeid The assignment grade ID.
+     * @param int $markerid The marker's user ID.
+     * @param bool $createifmissing Create the mark record if it doesn't exist.
+     * @return ?stdClass The assign_mark object or null if it doesn't exist.
      */
-    public function get_mark(int $gradeid, int $markerid): stdClass|false {
+    public function get_mark(int $gradeid, int $markerid, bool $createifmissing = false): ?stdClass {
         global $DB;
-        return $DB->get_record('assign_mark', ['gradeid' => $gradeid, 'marker' => $markerid]);
+        $record = $DB->get_record('assign_mark', ['gradeid' => $gradeid, 'marker' => $markerid]);
+        // If there's no mark record for this marker yet, and we want to create it if missing, then insert it.
+        // This can be when a comment is added before there is a mark added, for example.
+        if (!$record && $createifmissing) {
+            $grade = $this->get_grade($gradeid);
+            $id = $DB->insert_record('assign_mark', [
+                'assignment' => $grade->assignment,
+                'gradeid' => $grade->id,
+                'timecreated' => time(),
+                'timemodified' => time(),
+                'marker' => $markerid,
+                'mark' => null,
+            ]);
+            $record = $DB->get_record('assign_mark', ['id' => $id]);
+        }
+        return ($record) ? $record : null;
     }
 
     /**
@@ -5804,6 +5810,8 @@ class assign {
             $gradefordisplay = null;
             $gradeddate = null;
             $grader = null;
+            $markerusers = [];
+            $markeruserids = [];
             $gradingmanager = get_grading_manager($this->get_context(), 'mod_assign', 'submissions');
 
             $gradingcontrollergrade = '';
@@ -5844,16 +5852,44 @@ class assign {
                 if (has_capability('mod/assign:showhiddengrader', $this->context) || !$this->is_hidden_grader()) {
                     // Only display the grader if it is in the right state.
                     if (in_array($gradingstatus, [ASSIGN_GRADING_STATUS_GRADED, ASSIGN_MARKING_WORKFLOW_STATE_RELEASED])) {
-                        if (isset($grade->grader) && $grade->grader > 0) {
+                        if (
+                            isset($grade->grader) &&
+                            $grade->grader > 0 &&
+                            $grade->grader != $user->id &&
+                            has_capability('mod/assign:grade', $this->get_context(), $grade->grader)
+                        ) {
                             $grader = $DB->get_record('user', array('id' => $grade->grader));
+                            if ($grader) {
+                                $markeruserids[$grader->id] = true;
+                            }
                         } else if (isset($gradebookgrade->usermodified)
                             && $gradebookgrade->usermodified > 0
+                            && $gradebookgrade->usermodified != $user->id
                             && has_capability('mod/assign:grade', $this->get_context(), $gradebookgrade->usermodified)) {
                             // Grader not provided. Check that usermodified is a user who can grade.
                             // Case 1: When an assignment is reopened an empty assign_grade is created so the feedback
                             // plugin can know which attempt it's referring to. In this case, usermodifed is a student.
                             // Case 2: When an assignment's grade is overrided via the gradebook, usermodified is a grader.
                             $grader = $DB->get_record('user', array('id' => $gradebookgrade->usermodified));
+                            if ($grader) {
+                                $markeruserids[$grader->id] = true;
+                            }
+                        }
+                        // Fetch any individual marker users from assign_mark records.
+                        $markrecords = $DB->get_records('assign_mark', ['gradeid' => $grade->id], 'id', 'id,marker');
+                        foreach ($markrecords as $markrecord) {
+                            if (
+                                $markrecord->marker > 0 &&
+                                $markrecord->marker != $user->id &&
+                                has_capability('mod/assign:grade', $this->get_context(), $markrecord->marker) &&
+                                !isset($markeruserids[$markrecord->marker])
+                            ) {
+                                $marker = $DB->get_record('user', ['id' => $markrecord->marker]);
+                                if ($marker) {
+                                    $markerusers[] = $marker;
+                                    $markeruserids[$marker->id] = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -5874,7 +5910,8 @@ class assign {
                 $this->get_return_action(),
                 $this->get_return_params(),
                 $viewfullnames,
-                $gradingcontrollergrade
+                $gradingcontrollergrade,
+                $markerusers
             );
 
             return $feedbackstatus;
@@ -7922,7 +7959,7 @@ class assign {
         mdl: 'MDL-82681',
     )]
     protected function process_save_grading_options() {
-        \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
+        deprecation::emit_deprecation([self::class, __FUNCTION__]);
     }
 
     /**
@@ -10611,6 +10648,25 @@ class assign {
             'assignment' => $this->get_instance()->id,
         ], 'id');
     }
+
+    /**
+     * Get the user object for the marker of a given student and marker number.
+     *
+     * @param int $studentid The student ID.
+     * @param int $number The marker number, e.g. 1, 2, etc...
+     * @return stdClass|null
+     */
+    public function get_marker_number(int $studentid, int $number): ?stdClass {
+        global $DB;
+        $markers = $DB->get_fieldset('assign_allocated_marker', 'marker', [
+            'student' => $studentid, 'assignment' => $this->get_instance()->id,
+        ]);
+        if (!empty($markers) && count($markers) >= ($number + 1)) {
+            // Then get the name of the one at the column position requested, e.g. marker1, marker2, etc...
+            return \core_user::get_user($markers[$number]);
+        }
+        return null;
+    }
 }
 
 /**
@@ -10947,79 +11003,58 @@ function assign_process_group_deleted_in_course($courseid, $groupid = null) {
 /**
  * Change the sort order of an override
  *
+ * @deprecated since Moodle 5.3 MDL-86513 - use \mod_assign\override_manager::move_group_override() instead
+ * @todo MDL-87324 This will be removed in Moodle 6.0
  * @param int $id of the override
  * @param string $move direction of move
  * @param int $assignid of the assignment
  * @return bool success of operation
  */
+#[\core\attribute\deprecated(
+    replacement: '\mod_assign\override_manager::move_group_override',
+    since: '5.3',
+    mdl: 'MDL-86513',
+)]
 function move_group_override($id, $move, $assignid) {
+    deprecation::emit_deprecation(__FUNCTION__);
+
     global $DB;
 
-    // Get the override object.
-    if (!$override = $DB->get_record('assign_overrides', ['id' => $id, 'assignid' => $assignid], 'id, sortorder, groupid')) {
-        return false;
-    }
-    // Count the number of group overrides.
-    $overridecountgroup = $DB->count_records('assign_overrides', array('userid' => null, 'assignid' => $assignid));
+    // Get assignment and context.
+    $assign = $DB->get_record('assign', ['id' => $assignid], '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('assign', $assign->id, $assign->course, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
 
-    // Calculate the new sortorder.
-    if ( ($move == 'up') and ($override->sortorder > 1)) {
-        $neworder = $override->sortorder - 1;
-    } else if (($move == 'down') and ($override->sortorder < $overridecountgroup)) {
-        $neworder = $override->sortorder + 1;
-    } else {
-        return false;
-    }
-
-    // Retrieve the override object that is currently residing in the new position.
-    $params = ['sortorder' => $neworder, 'assignid' => $assignid];
-    if ($swapoverride = $DB->get_record('assign_overrides', $params, 'id, sortorder, groupid')) {
-
-        // Swap the sortorders.
-        $swapoverride->sortorder = $override->sortorder;
-        $override->sortorder     = $neworder;
-
-        // Update the override records.
-        $DB->update_record('assign_overrides', $override);
-        $DB->update_record('assign_overrides', $swapoverride);
-
-        // Delete cache for the 2 records we updated above.
-        $cache = cache::make('mod_assign', 'overrides');
-        $cache->delete("{$assignid}_g_{$override->groupid}");
-        $cache->delete("{$assignid}_g_{$swapoverride->groupid}");
-    }
-
-    reorder_group_overrides($assignid);
-    return true;
+    // Use the manager class.
+    $manager = new mod_assign\override_manager($assign, $context);
+    return $manager->move_group_override($id, $move);
 }
 
 /**
  * Reorder the overrides starting at the override at the given startorder.
  *
- * @param int $assignid of the assigment
+ * @deprecated since Moodle 5.3 MDL-86513 - use \mod_assign\override_manager::reorder_group_overrides() instead
+ * @todo MDL-87324 This will be removed in Moodle 6.0
+ * @param int $assignid of the assignment
  */
+#[\core\attribute\deprecated(
+    replacement: '\mod_assign\override_manager::reorder_group_overrides',
+    since: '5.3',
+    mdl: 'MDL-86513',
+)]
 function reorder_group_overrides($assignid) {
+    deprecation::emit_deprecation(__FUNCTION__);
+
     global $DB;
 
-    $i = 1;
-    if ($overrides = $DB->get_records('assign_overrides', array('userid' => null, 'assignid' => $assignid), 'sortorder ASC')) {
-        $cache = cache::make('mod_assign', 'overrides');
-        foreach ($overrides as $override) {
-            $f = new stdClass();
-            $f->id = $override->id;
-            $f->sortorder = $i++;
-            $DB->update_record('assign_overrides', $f);
-            $cache->delete("{$assignid}_g_{$override->groupid}");
+    // Get assignment and context.
+    $assign = $DB->get_record('assign', ['id' => $assignid], '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('assign', $assign->id, $assign->course, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
 
-            // Update priorities of group overrides.
-            $params = [
-                'modulename' => 'assign',
-                'instance' => $override->assignid,
-                'groupid' => $override->groupid
-            ];
-            $DB->set_field('event', 'priority', $f->sortorder, $params);
-        }
-    }
+    // Use the manager class.
+    $manager = new mod_assign\override_manager($assign, $context);
+    $manager->reorder_group_overrides();
 }
 
 /**

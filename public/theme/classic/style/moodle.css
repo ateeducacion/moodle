@@ -28522,32 +28522,39 @@ blockquote {
 body.behat-site .action-menu .dropdown-subpanel-content.show {
   animation: none;
 }
-.action-menu .dropdown-subpanel .dropdown-item::after {
+.action-menu .dropstart .dropdown-subpanel-content.dropdown-menu[data-bs-popper],
+.action-menu .dropend .dropdown-subpanel-content.dropdown-menu[data-bs-popper] {
+  /* stylelint-disable declaration-no-important */
+  top: calc(-0.5rem - var(--bs-border-width)) !important;
+  /* stylelint-enable declaration-no-important */
+}
+.action-menu .dropdown-subpanel > .dropdown-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.action-menu .dropdown-subpanel > .dropdown-item::after {
+  display: inline-block;
   border: 0;
   font: var(--fa-font-solid);
   content: "\f054";
+  margin-left: auto;
 }
-.action-menu .dropdown-subpanel .dropdown-item::before {
+.dir-rtl .action-menu .dropdown-subpanel > .dropdown-item::after {
+  content: "\f053";
+}
+.action-menu .dropdown-subpanel > .dropdown-item::before {
   display: none;
 }
 
 @keyframes animate-pop {
   0% {
-    transform: scale(0.9, 0.9);
+    scale: 0.9;
   }
   100% {
-    transform: scale(1, 1);
+    scale: 1;
   }
 }
-.dir-rtl .action-menu .dropdown-subpanel .dropdown-item::after {
-  border: 0;
-  font: var(--fa-font-solid);
-  content: "\f053";
-}
-.dir-rtl .action-menu .dropdown-subpanel .dropdown-item::before {
-  display: none;
-}
-
 .dropdown-item a {
   display: block;
   width: 100%;
@@ -31271,6 +31278,15 @@ body:not(.editing) .activity.subsection:last-child .section-item .course-section
   margin-top: -1px;
 }
 
+/* Course linear navigation footer. */
+.course-linear-navigation-footer-content .course-linear-navigation-link {
+  font-size: 1rem;
+  padding: 0.25rem 0;
+}
+.course-linear-navigation-footer-content .course-linear-navigation-link:hover span, .course-linear-navigation-footer-content .course-linear-navigation-link:focus span {
+  text-decoration: underline;
+}
+
 /* Old indentation styles */
 .mod-indent-outer {
   display: table;
@@ -32284,6 +32300,165 @@ body.drawer-ease {
   }
   .drawer.not-initialized {
     display: block;
+  }
+  .pagelayout-standard .drawer.drawer-left,
+  .pagelayout-standard .drawer.drawer-right,
+  body.limitedwidth .drawer.drawer-left,
+  body.limitedwidth .drawer.drawer-right {
+    z-index: 2;
+  }
+  .pagelayout-standard .drawer.drawer-left,
+  body.limitedwidth .drawer.drawer-left {
+    left: auto;
+    right: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+    width: 0;
+    min-width: 0;
+    max-width: 285px;
+    overflow: clip;
+    overscroll-behavior: none;
+    transition: width 0.2s ease, right 0.2s ease, visibility 0.2s ease;
+  }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: reduce) {
+  .pagelayout-standard .drawer.drawer-left,
+  body.limitedwidth .drawer.drawer-left {
+    transition: none;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer.drawer-left.show,
+  body.limitedwidth .drawer.drawer-left.show {
+    left: auto;
+    right: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+    width: 285px;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer.drawer-left:not(.show) .drawercontent,
+  body.limitedwidth .drawer.drawer-left:not(.show) .drawercontent {
+    overflow-y: hidden;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer.drawer-right,
+  body.limitedwidth .drawer.drawer-right {
+    right: auto;
+    left: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+    width: 315px;
+    min-width: 0;
+    max-width: 315px;
+    clip-path: inset(0 100% 0 0);
+    overscroll-behavior: none;
+    transition: clip-path 0.2s ease, left 0.2s ease, visibility 0.2s ease;
+  }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: reduce) {
+  .pagelayout-standard .drawer.drawer-right,
+  body.limitedwidth .drawer.drawer-right {
+    transition: none;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer.drawer-right.show,
+  body.limitedwidth .drawer.drawer-right.show {
+    right: auto;
+    left: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+    width: 315px;
+    clip-path: inset(0 0 0 0);
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer.drawer-right:not(.show) .drawercontent,
+  body.limitedwidth .drawer.drawer-right:not(.show) .drawercontent {
+    overflow-y: hidden;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left {
+    right: calc(100% - 285px);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left.show {
+    right: calc(100% - 285px);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-right,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-right {
+    left: calc(50% + 830px / 2 + calc(0.5rem + 20px) + 285px / 2);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-right.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-right.show {
+    left: calc(50% + 830px / 2 + calc(0.5rem + 20px) + 285px / 2);
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-left,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-left {
+    right: calc(50% + 830px / 2 + calc(0.5rem + 20px) + 315px / 2);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-left.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-left.show {
+    right: calc(50% + 830px / 2 + calc(0.5rem + 20px) + 315px / 2);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right {
+    left: calc(100% - 315px);
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right.show {
+    left: calc(100% - 315px);
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left {
+    right: min(calc(50% + 830px / 2 + calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 285px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left.show {
+    right: min(calc(50% + 830px / 2 + calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 285px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right {
+    left: min(calc(50% + 830px / 2 - calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 315px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right.show {
+    left: min(calc(50% + 830px / 2 - calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 315px));
+  }
+}
+@media (min-width: 1400px) {
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right {
+    left: calc(50% + 830px / 2 - 315px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer.drawer-right.show {
+    left: calc(50% + 830px / 2 - 315px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left {
+    right: calc(50% + 830px / 2 - 285px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer.drawer-left.show {
+    right: calc(50% + 830px / 2 - 285px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left {
+    right: min(calc(50% + 830px / 2 + calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 285px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-left.show {
+    right: min(calc(50% + 830px / 2 + calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 285px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right {
+    left: min(calc(50% + 830px / 2 - calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 315px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right.show,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer.drawer-right.show {
+    left: min(calc(50% + 830px / 2 - calc((315px - 285px) / 2) + calc(0.5rem + 20px)), calc(100% - 315px));
   }
 }
 .drawer-md,
@@ -33936,6 +34111,9 @@ a.ygtvspacer:hover {
 .message-app .list-group .list-group-item:hover {
   color: #fff;
   background-color: #0f6cbf;
+}
+.message-app .list-group .list-group-item:hover .message-icon-forward {
+  color: inherit !important;
 }
 .message-app .list-group .list-group-item:first-child {
   border-top: 0;
@@ -38809,7 +38987,6 @@ body {
   bottom: calc(max(80px, 1rem * 3) * -1);
   transition: bottom 0.5s;
   z-index: 3;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.15);
   font-size: calc(1rem * 1.10);
 }
 .stickyfooter .sticky-footer-content {
@@ -38820,27 +38997,33 @@ body {
     max-width: 830px;
   }
 }
-.stickyfooter .sticky-footer-content-wrapper {
+.stickyfooter .sticky-footer-content-wrapper,
+.stickyfooter .sticky-footer-supplementary-wrapper {
   transition: 0.2s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .stickyfooter .sticky-footer-content-wrapper {
+  .stickyfooter .sticky-footer-content-wrapper,
+  .stickyfooter .sticky-footer-supplementary-wrapper {
     transition: none;
   }
 }
 @media (min-width: 992px) {
-  .stickyfooter .sticky-footer-content-wrapper .drawers {
+  .stickyfooter .sticky-footer-content-wrapper .drawers,
+  .stickyfooter .sticky-footer-supplementary-wrapper .drawers {
     padding: 0 3rem;
   }
-  .show-drawer-left .stickyfooter .sticky-footer-content-wrapper {
+  .show-drawer-left .stickyfooter .sticky-footer-content-wrapper,
+  .show-drawer-left .stickyfooter .sticky-footer-supplementary-wrapper {
     margin-left: 285px;
     padding: 0 3rem 0 1rem;
   }
-  .show-drawer-right .stickyfooter .sticky-footer-content-wrapper {
+  .show-drawer-right .stickyfooter .sticky-footer-content-wrapper,
+  .show-drawer-right .stickyfooter .sticky-footer-supplementary-wrapper {
     margin-right: 315px;
     padding: 0 1rem 0 3rem;
   }
-  .show-drawer-right.show-drawer-left .stickyfooter .sticky-footer-content-wrapper {
+  .show-drawer-right.show-drawer-left .stickyfooter .sticky-footer-content-wrapper,
+  .show-drawer-right.show-drawer-left .stickyfooter .sticky-footer-supplementary-wrapper {
     padding: 0 1rem;
   }
 }
@@ -38849,6 +39032,14 @@ body {
 }
 .stickyfooter [data-groupname=buttonar] {
   width: 100%;
+}
+
+.sticky-footer-supplementary-wrapper {
+  font-size: 1rem;
+}
+
+.sticky-footer-supplementary-wrapper:has(.sticky-footer-supplementary) + .sticky-footer-content-wrapper {
+  border-top: 1px solid #dee2e6;
 }
 
 .hasstickyfooter .stickyfooter {
@@ -39033,10 +39224,6 @@ body {
 }
 .popover-region-content-container.loading .empty-message {
   display: none;
-}
-
-.navbar-nav .popover-region .icon {
-  font-weight: bolder;
 }
 
 .navbar .popover-region.collapsed .popover-region-container {
@@ -39563,14 +39750,14 @@ body.tox-fullscreen .tox.tox-tinymce-aux {
 .drawer-toggles .drawer-toggler .btn:focus {
   box-shadow: 0 0 0 0.25rem rgba(15, 108, 191, 0.75);
 }
+.drawer-toggles .drawer-toggler .btn:hover {
+  background-color: #ced4da;
+}
 .drawer-toggles .drawer-left-toggle {
   left: 0;
 }
 .drawer-toggles .drawer-right-toggle {
   right: 0;
-}
-.drawer-toggles .drawer-toggler .btn:hover {
-  background-color: #ced4da;
 }
 
 #page.drawers.show-drawer-left .drawer-left-toggle {
@@ -39585,8 +39772,6 @@ body.tox-fullscreen .tox.tox-tinymce-aux {
   .drawer-toggler .btn {
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.33);
   }
-}
-@media (max-width: 767.98px) {
   .drawer-toggles {
     z-index: 100;
   }
@@ -39656,20 +39841,12 @@ body.tox-fullscreen .tox.tox-tinymce-aux {
   #page.drawers.show-drawer-left {
     margin-left: 285px;
     margin-right: 0;
-    padding-left: 1rem;
   }
 }
 @media (min-width: 992px) {
   #page.drawers.show-drawer-right {
     margin-left: 0;
     margin-right: 315px;
-    padding-right: 1rem;
-  }
-  .jsenabled #page.drawers.show-drawer-right .popover-process-monitor, .jsenabled #page.drawers.show-drawer-right .btn-footer-popover, .jsenabled #page.drawers.show-drawer-right .btn-footer-communication {
-    right: calc(315px + 2rem);
-  }
-  .jsenabled:has(#page.drawers.show-drawer-right) .maintenancewarning {
-    right: calc(315px + 5rem);
   }
 }
 @media (min-width: 992px) {
@@ -39681,6 +39858,83 @@ body.tox-fullscreen .tox.tox-tinymce-aux {
 @media (min-width: 992px) {
   #page.drawers.hasstickyfooter {
     margin-bottom: max(80px, 1rem * 3);
+  }
+}
+@media (min-width: 992px) {
+  body:not(.pagelayout-standard):not(.limitedwidth) #page.drawers.show-drawer-right .popover-process-monitor,
+  body:not(.pagelayout-standard):not(.limitedwidth) #page.drawers.show-drawer-right .btn-footer-popover,
+  body:not(.pagelayout-standard):not(.limitedwidth) #page.drawers.show-drawer-right .btn-footer-communication {
+    right: calc(315px + 2rem);
+  }
+  body:not(.pagelayout-standard):not(.limitedwidth):has(#page.drawers.show-drawer-right) .maintenancewarning {
+    right: calc(315px + 5rem);
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth .drawer-toggles .drawer-left-toggle {
+    left: auto;
+    right: calc(100% - 40px - 2 * 16px);
+    transition: right 0.2s ease;
+  }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: reduce) {
+  .pagelayout-standard .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth .drawer-toggles .drawer-left-toggle {
+    transition: none;
+  }
+}
+@media (min-width: 992px) {
+  .pagelayout-standard .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth .drawer-toggles .drawer-right-toggle {
+    right: auto;
+    left: calc(100% - 40px - 2 * 16px);
+    transition: left 0.2s ease;
+  }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: reduce) {
+  .pagelayout-standard .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth .drawer-toggles .drawer-right-toggle {
+    transition: none;
+  }
+}
+@media (min-width: 1400px) {
+  .pagelayout-standard #page.drawers.show-drawer-left.show-drawer-right,
+  body.limitedwidth #page.drawers.show-drawer-left.show-drawer-right {
+    margin-left: 285px;
+    margin-right: 315px;
+  }
+  .pagelayout-standard .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth .drawer-toggles .drawer-left-toggle {
+    right: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth .drawer-toggles .drawer-right-toggle {
+    left: calc(50% + 830px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer-toggles .drawer-left-toggle {
+    right: calc(50% + 830px / 2 + 315px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-right):not(:has(#page.drawers.show-drawer-left)) .drawer-toggles .drawer-right-toggle {
+    left: calc(50% + 830px / 2 - 315px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer-toggles .drawer-left-toggle {
+    right: calc(50% + 830px / 2 - 285px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-left):not(:has(#page.drawers.show-drawer-right)) .drawer-toggles .drawer-right-toggle {
+    left: calc(50% + 830px / 2 + 285px / 2 + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer-toggles .drawer-left-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer-toggles .drawer-left-toggle {
+    right: calc(50% + 830px / 2 + calc((315px - 285px) / 2) + calc(0.5rem + 20px));
+  }
+  .pagelayout-standard:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer-toggles .drawer-right-toggle,
+  body.limitedwidth:has(#page.drawers.show-drawer-left.show-drawer-right) .drawer-toggles .drawer-right-toggle {
+    left: calc(50% + 830px / 2 - calc((315px - 285px) / 2) + calc(0.5rem + 20px));
   }
 }
 .drawercontrolbuttons {
@@ -40209,16 +40463,27 @@ div.editor_atto_toolbar button .icon {
   align-items: center;
   height: 100%;
 }
+.navbar.fixed-top .usermenu .userfirstname {
+  margin-inline: 0.5rem;
+  max-width: 20ch;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .navbar.fixed-top .usermenu .dropdown-menu {
   min-width: 235px;
 }
 .navbar.fixed-top .usermenu .dropdown-menu .carousel-navigation-link > * {
   pointer-events: none;
 }
-.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item {
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-header,
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item,
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item-text {
   padding: 0.25rem 1.75rem 0.25rem 0.75rem;
 }
-.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item.carousel-navigation-link::after {
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-header.carousel-navigation-link::after,
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item.carousel-navigation-link::after,
+.navbar.fixed-top .usermenu .dropdown-menu .dropdown-item-text.carousel-navigation-link::after {
   font: var(--fa-font-solid);
   content: "\f0da";
   font-size: 1rem;
@@ -40276,6 +40541,12 @@ div.editor_atto_toolbar button .icon {
   height: 100%;
   display: flex;
 }
+.navbar.fixed-top .editmode-switch-form .input-group {
+  flex-wrap: nowrap;
+}
+.navbar.fixed-top .editmode-switch-form .input-group > label {
+  white-space: nowrap;
+}
 
 .dir-rtl .navbar.fixed-top .usermenu .dropdown-menu .dropdown-item.carousel-navigation-link::after {
   font: var(--fa-font-solid);
@@ -40302,6 +40573,29 @@ div.editor_atto_toolbar button .icon {
 
 :root {
   --navbar-height: 50px;
+}
+
+.navbar.fixed-top #usernavigation .search-input-inline {
+  display: none;
+}
+@media (min-width: 768px) {
+  .navbar.fixed-top #usernavigation .search-input-inline {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5rem;
+  }
+}
+.navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .input-group {
+  width: 256px;
+}
+.navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .input-group-text,
+.navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .form-control {
+  background-color: #e9ecef;
+}
+.navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .input-group-text,
+.navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .form-control::placeholder {
+  color: #495057;
 }
 
 /**

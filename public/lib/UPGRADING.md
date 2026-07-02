@@ -37,6 +37,18 @@
   Note: disabling cookie support after it has been enabled is not recommended. If doing so you will need to determine whether to terminate the current session, or close it.
 
   For more information see [MDL-87174](https://tracker.moodle.org/browse/MDL-87174)
+- The `moodle_page` class now includes `set_has_sticky_footer()` and `has_sticky_footer()` to track sticky footer presence and prevent redundant renders.
+
+  For more information see [MDL-87302](https://tracker.moodle.org/browse/MDL-87302)
+- Added `moodle_page::set_show_navigation_footer(bool $show)` to control whether the sticky navigation footer is rendered. Use $PAGE->set_show_navigation_footer(false); to suppress the footer on pages where it is not required.
+
+  For more information see [MDL-87575](https://tracker.moodle.org/browse/MDL-87575)
+- Added new 'url' optional parameter to `core\output\action_menu\subpanel` so subpanel menu elements can have their own link.
+
+  For more information see [MDL-88312](https://tracker.moodle.org/browse/MDL-88312)
+- Added new `core\output\submenu` renderable, that can be added to a `core\output\action_menu\subpanel` to create menu sub-levels.
+
+  For more information see [MDL-88312](https://tracker.moodle.org/browse/MDL-88312)
 - Two new AMD modules are now available. `core/import` lets AMD code do a native ESM dynamic import without Babel rewriting it. `core/component` provides `appendToDom` and `prependToDom` to mount React components into the DOM, which are then picked up automatically by `react_autoinit`.
 
   For more information see [MDL-88505](https://tracker.moodle.org/browse/MDL-88505)
@@ -61,12 +73,24 @@
   | `is_restored_user()` | `\core\authentication::is_restored_user()` |
 
   For more information see [MDL-88580](https://tracker.moodle.org/browse/MDL-88580)
+- The `moodle_page` class now includes `set_supplementary_content()` and `get_supplementary_content()` methods to inject and retrieve secondary content within the sticky footer.
+
+  For more information see [MDL-88601](https://tracker.moodle.org/browse/MDL-88601)
+
+### Changed
+
+- The `search` landmark role in the `core/search_input_auto` template is enclosed within a `searchrole` Mustache block so that templates that use this template can override and remove the `search` landmark role when deemed unnecessary.
+
+  For more information see [MDL-88833](https://tracker.moodle.org/browse/MDL-88833)
 
 ### Deprecated
 
 - The `FEATURE_GROUPMEMBERSONLY` constant has been deprecated and is no longer supported. It should be removed from any plugin code.
 
   For more information see [MDL-83231](https://tracker.moodle.org/browse/MDL-83231)
+- `get_dataroot_size` in `\core\hub\registration` has been deprecated in favour of `get_filepool_usage`, which approximates disk usage from the database rather than scanning the dataroot directory, making it significantly more performant on large sites.
+
+  For more information see [MDL-88805](https://tracker.moodle.org/browse/MDL-88805)
 
 ## 5.2
 
