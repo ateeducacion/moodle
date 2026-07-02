@@ -331,6 +331,7 @@ class core_admin_renderer extends plugin_renderer_base {
         $output .= $this->forgotten_password_url_warning($invalidforgottenpasswordurl);
         $output .= $this->mnet_deprecation_warning($xmlrpcwarning);
         $output .= $this->moodlenet_removal_warning();
+        $output .= $this->marketplace_integration_notice();
         $output .= $this->userfeedback_encouragement($showfeedbackencouragement);
         $output .= $this->services_and_support_content($showservicesandsupport);
         $output .= $this->campaign_content($showcampaigncontent);
@@ -2263,11 +2264,27 @@ class core_admin_renderer extends plugin_renderer_base {
      * @return string
      */
     public function upgradekey_form_page($url) {
+        return $this->upgradekey_form_page_with_validation($url, false);
+    }
 
+    /**
+     * Render a simple page for providing the upgrade key, providing validation for failed attempts
+     *
+     * @param moodle_url $url
+     * @param bool $upgradekeyerror
+     * @return string
+     */
+    public function upgradekey_form_page_with_validation(moodle_url $url, bool $upgradekeyerror): string {
         $output = '';
         $output .= $this->header();
         $output .= $this->heading(get_string('upgradekeyreq', 'core_admin'));
         $output .= $this->container_start('upgradekeyreq w-25');
+
+        // Inform user if they got it wrong.
+        if ($upgradekeyerror) {
+            $output .= $this->warning(get_string('upgradekeyerror', 'core_admin'), 'danger');
+        }
+
         $output .= html_writer::start_tag('form', array('method' => 'POST', 'action' => $url));
         $output .= html_writer::empty_tag('input', [
             'id' => 'upgradekey',
@@ -2357,6 +2374,18 @@ class core_admin_renderer extends plugin_renderer_base {
         }
 
         return '';
+    }
+
+    /**
+     * Display a notice about Moodle Marketplace integration.
+     *
+     * @return string HTML to output.
+     */
+    protected function marketplace_integration_notice(): string {
+        $installer = tool_installaddon_installer::instance();
+        $url = $installer->get_marketplace_url();
+        $notice = get_string('marketplaceavailablenotice', 'admin', $url->out());
+        return $this->warning($notice, 'info');
     }
 
     /**
