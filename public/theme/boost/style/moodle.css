@@ -15734,7 +15734,7 @@ textarea.form-control-lg {
   padding-left: 2.5em;
 }
 .form-switch .form-check-input {
-  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.45%29'/%3e%3c/svg%3e");
   width: 2em;
   margin-left: -2.5em;
   background-image: var(--bs-form-switch-bg);
@@ -27354,6 +27354,7 @@ nav.navbar .logo img {
 
 ul.dragdrop-keyboard-drag li {
   list-style-type: none;
+  margin-bottom: 0.1em;
 }
 ul.dragdrop-keyboard-drag li a,
 ul.dragdrop-keyboard-drag li a:hover {
@@ -40838,6 +40839,19 @@ div.editor_atto_toolbar button .icon {
 .drawer-primary .drawercontent .list-group .list-group-item {
   border-left: 0;
   border-right: 0;
+}
+
+.drawer-primary .drawerheader [data-region=site-home-link] {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.drawer-primary .drawerheader .logo {
+  max-width: 100%;
+  max-height: 60px;
+  width: auto;
+  height: 60px;
+  object-fit: contain;
 }
 
 .secondary-navigation {
