@@ -197,6 +197,20 @@ $right-drawer-width: 320px;
     &.not-initialized {
         display: none;
     }
+
+    .drawerheader {
+        .draweractions {
+            .btn {
+                width: $icon-medium-width;
+                height: $icon-medium-width; // Using the same value for width and height to make the button square.
+                background-color: $gray-200;
+
+                &:hover {
+                    background-color: $gray-400;
+                }
+            }
+        }
+    }
 }
 
 @mixin drawertypes() {
@@ -213,9 +227,19 @@ $right-drawer-width: 320px;
             visibility: visible;
         }
 
+        .drawerheader {
+            flex-direction: row-reverse;
+        }
+
         .drawertoggle {
             margin-left: auto;
             margin-right: map-get($spacers, 2);
+        }
+
+        .block-header {
+            &:has(> h3) {
+                border-bottom: $border-width solid $border-color;
+            }
         }
     }
     &.drawer-left {
