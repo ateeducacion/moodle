@@ -208,7 +208,7 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
         }
         $createsql = $this->pdb->query($sql)->fetch();
         if (!$createsql) {
-            return false;
+            return array();
         }
         $createsql = $createsql['sql'];
 
@@ -377,5 +377,21 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
      */
     public function sql_bitxor($int1, $int2) {
         return '( ~' . $this->sql_bitand($int1, $int2) . ' & ' . $this->sql_bitor($int1, $int2) . ')';
+    }
+
+    /**
+     * Connect, then initialise the temp-tables controller. Older cores (4.5)
+     * expect each driver to do this in connect(); without it $this->temptables
+     * stays null and the DDL generator fails during install.
+     *
+     * @return bool true on success
+     */
+    public function connect($dbhost, $dbuser, $dbpass, $dbname, $prefix, ?array $dboptions=null) {
+        $return = parent::connect($dbhost, $dbuser, $dbpass, $dbname, $prefix, $dboptions);
+        if ($this->temptables === null) {
+            require_once(__DIR__ . '/moodle_temptables.php');
+            $this->temptables = new moodle_temptables($this);
+        }
+        return $return;
     }
 }
