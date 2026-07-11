@@ -287,7 +287,10 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
                 // trim extra quotes from text default values
                 $columninfo['default_value'] = substr($columninfo['default_value'], 1, -1);
             }
-            $structure[$columninfo['name']] = new database_column_info($columninfo);
+            // database_column_info reads its fields via object property access, so it must
+            // be given an object like the pgsql and mysqli drivers do; passing the raw array
+            // leaves every property (including ->name) null.
+            $structure[$columninfo['name']] = new database_column_info((object) $columninfo);
         }
 
         return $structure;
