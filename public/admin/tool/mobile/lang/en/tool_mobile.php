@@ -88,6 +88,8 @@ $string['disabledfeatures_desc'] = 'Select here the features you want to disable
 $string['displayerrorswarning'] = 'Display debug messages (debugdisplay) is enabled. It should be disabled.';
 $string['downloadcourse'] = 'Download course';
 $string['downloadcourses'] = 'Download courses';
+$string['enabledeeplinkautologin'] = 'Enable auto-login in deep links';
+$string['enabledeeplinkautologin_desc'] = 'By enabling this option, users will be automatically logged in to their site in the mobile app via a deep link when the token and privatetoken are passed as parameters in the deep link.';
 $string['enablesmartappbanners'] = 'Enable App Banners';
 $string['enablesmartappbanners_desc'] = 'If enabled, a banner promoting the mobile app will be displayed when accessing the site using a mobile browser.';
 $string['enhanced'] = 'Premium';
@@ -201,6 +203,8 @@ $string['setuplink'] = 'App download page';
 $string['setuplink_desc'] = 'URL of page with options to download the mobile app from the App Store and Google Play. The app download page link is displayed in the page footer and in a user\'s profile. Leave blank to not display a link.';
 $string['showingcacheddata'] = 'Last synced: {$a->since} days ago ({$a->date}).';
 $string['showinglivedata'] = 'View live data in the <a href="{$a}" target="_blank">Moodle Apps Portal</a>.';
+$string['showlogoinappheader'] = 'Show site logo in app header';
+$string['showlogoinappheader_desc'] = 'Display the site logo in the app\'s home and dashboard header instead of the site name. Requires a site logo to be configured in Site administration > Appearance.';
 $string['siteplugins'] = 'Site plugins';
 $string['smartappbanners'] = 'App Banners';
 $string['subscription'] = 'Subscription';
