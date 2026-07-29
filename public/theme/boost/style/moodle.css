@@ -30685,6 +30685,12 @@ body.dragging .dragging {
   margin-left: 0;
   margin-right: 4px;
   width: 9px;
+  display: inline-block;
+  vertical-align: 0.255em;
+}
+
+.dropleft .dropdown-toggle::after {
+  content: none;
 }
 
 .dir-rtl .dropleft .dropdown-toggle::before {
@@ -30694,6 +30700,7 @@ body.dragging .dragging {
 .dropright .dropdown-toggle::after {
   border: 0;
   font: var(--fa-font-solid);
+  font-size: 9px;
   content: "\f054";
 }
 
@@ -30704,6 +30711,7 @@ body.dragging .dragging {
 .dropup .dropdown-toggle::after {
   border: 0;
   font: var(--fa-font-solid);
+  font-size: 9px;
   content: "\f077";
 }
 
@@ -32942,6 +32950,22 @@ table.calendartable caption {
   display: block;
 }
 
+.courseindex-collapsemenu {
+  color: #495057;
+}
+.courseindex-collapsemenu .collapseall {
+  display: block;
+}
+.courseindex-collapsemenu .expandall {
+  display: none;
+}
+.courseindex-collapsemenu.collapsed .collapseall {
+  display: none;
+}
+.courseindex-collapsemenu.collapsed .expandall {
+  display: block;
+}
+
 .max-section-alert {
   border-top: 1px solid #dee2e6;
   font-size: 0.875rem;
@@ -34591,7 +34615,7 @@ body.drawer-ease {
   position: fixed;
   top: 60px;
   right: 0;
-  height: calc(100% - 60px);
+  height: calc(100vh - 60px);
   width: 320px;
   padding: 0;
   visibility: visible;
@@ -34611,11 +34635,6 @@ body.drawer-ease {
 }
 
 @media (max-width: 767.98px) {
-  [data-region=right-hand-drawer].drawer {
-    top: 0;
-    height: 100%;
-    z-index: 1031;
-  }
   body.drawer-open-left,
   body.drawer-open-right {
     overflow: hidden;
@@ -34626,10 +34645,14 @@ body.drawer-ease {
   position: fixed;
   height: 100vh;
   top: 0;
+  display: flex;
+  flex-direction: column;
 }
 @media (max-width: 991.98px) {
   .drawer {
-    z-index: 1035;
+    z-index: 1021;
+    top: 60px;
+    height: calc(100vh - 60px);
   }
 }
 .drawer.not-initialized {
@@ -34660,7 +34683,7 @@ body.drawer-ease {
   right: 0;
   visibility: visible;
 }
-.drawer.drawer-right .drawerheader {
+.drawer.drawer-right .drawerheadertop {
   flex-direction: row-reverse;
 }
 .drawer.drawer-right .drawertoggle {
@@ -34874,7 +34897,7 @@ body.drawer-ease {
   display: none;
 }
 
-.drawerheader {
+.drawerheader .drawerheadertop {
   padding: 0;
   height: 60px;
   display: flex;
@@ -34888,8 +34911,6 @@ body.drawer-ease {
   margin-right: 16px;
 }
 .drawerheader .draweractions {
-  display: flex;
-  gap: 0.25rem;
   margin-left: 0.5rem;
 }
 .drawerheader .draweractions .btn {
@@ -34907,11 +34928,15 @@ body.drawer-ease {
     position: fixed;
     height: 100vh;
     top: 0;
+    display: flex;
+    flex-direction: column;
   }
 }
 @media (max-width: 991.98px) and (max-width: 991.98px) {
   .drawer-md {
-    z-index: 1035;
+    z-index: 1021;
+    top: 60px;
+    height: calc(100vh - 60px);
   }
 }
 @media (max-width: 991.98px) {
@@ -34951,7 +34976,7 @@ body.drawer-ease {
   }
 }
 @media (max-width: 991.98px) {
-  .drawer-md.drawer-right .drawerheader {
+  .drawer-md.drawer-right .drawerheadertop {
     flex-direction: row-reverse;
   }
 }
@@ -35014,11 +35039,15 @@ body.drawer-ease {
     position: fixed;
     height: 100vh;
     top: 0;
+    display: flex;
+    flex-direction: column;
   }
 }
 @media (max-width: 767.98px) and (max-width: 991.98px) {
   .drawer-sm {
-    z-index: 1035;
+    z-index: 1021;
+    top: 60px;
+    height: calc(100vh - 60px);
   }
 }
 @media (max-width: 767.98px) {
@@ -35058,7 +35087,7 @@ body.drawer-ease {
   }
 }
 @media (max-width: 767.98px) {
-  .drawer-sm.drawer-right .drawerheader {
+  .drawer-sm.drawer-right .drawerheadertop {
     flex-direction: row-reverse;
   }
 }
@@ -35117,7 +35146,9 @@ body.drawer-ease {
 .drawercontent {
   position: relative;
   z-index: -1;
-  height: calc(100% - 60px);
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -39961,35 +39992,6 @@ img.userpicture {
 .path-mod-feedback #showentryanontable td.cell.deleteentry {
   width: 10px;
 }
-.path-mod-feedback .response_navigation {
-  margin: 0.5rem 0;
-}
-.path-mod-feedback .response_navigation a {
-  display: block;
-}
-.path-mod-feedback .response_navigation a.back_to_list {
-  text-align: center;
-}
-.path-mod-feedback .response_navigation .prev_response {
-  text-align: left;
-}
-.path-mod-feedback .response_navigation .prev_response:before {
-  /*rtl:raw:
-  content: ' ► ';
-  */
-  /*rtl:remove*/
-  content: " ◄ ";
-}
-.path-mod-feedback .response_navigation .next_response {
-  text-align: right;
-}
-.path-mod-feedback .response_navigation .next_response:after {
-  /*rtl:raw:
-  content: ' ◄ ';
-  */
-  /*rtl:remove*/
-  content: " ► ";
-}
 
 /* reports.less */
 #page-report-participation-index .participationselectform div label {
@@ -41613,6 +41615,9 @@ body {
   font-size: 0.875rem;
   min-height: 32px;
 }
+.stickyfooter .course-linear-navigation .course-linear-navigation-completion .completion-status {
+  font-size: 1rem;
+}
 
 /* Standard components fixes for sticky footer. */
 .stickyfooter ul.pagination {
@@ -43039,6 +43044,12 @@ div.editor_atto_toolbar button .icon {
 }
 .navbar.fixed-top .usermenu .dropdown-menu {
   min-width: 235px;
+  max-width: 20rem;
+}
+@media (max-width: 575.98px) {
+  .navbar.fixed-top .usermenu .dropdown-menu {
+    max-width: calc(100vw - 1rem);
+  }
 }
 .navbar.fixed-top .usermenu .dropdown-menu .carousel-navigation-link > * {
   pointer-events: none;
@@ -43047,6 +43058,9 @@ div.editor_atto_toolbar button .icon {
 .navbar.fixed-top .usermenu .dropdown-menu .dropdown-item,
 .navbar.fixed-top .usermenu .dropdown-menu .dropdown-item-text {
   padding: 0.25rem 1.75rem 0.25rem 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .navbar.fixed-top .usermenu .dropdown-menu .dropdown-header.carousel-navigation-link::after,
 .navbar.fixed-top .usermenu .dropdown-menu .dropdown-item.carousel-navigation-link::after,
@@ -43694,7 +43708,7 @@ div.editor_atto_toolbar button .icon {
 }
 .drawerheader .drawerheading #courseindexdrawerheading {
   font-size: 1rem;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
   min-width: 0;
   overflow: hidden;
 }
