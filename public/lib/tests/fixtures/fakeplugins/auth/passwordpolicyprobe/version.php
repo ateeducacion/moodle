@@ -13,15 +13,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Version details for the Recent activities block.
+ * Fake auth plugin for testing the check_password_policy plugin callback.
  *
- * @package    block_recentlyaccesseditems
- * @copyright  2018 Victor Deniz <victor@moodle.com>
+ * @package    core
+ * @copyright  Meirza Arson <meirza.arson@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025100601;            // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2025092600;            // Requires this Moodle version.
-$plugin->component = 'block_recentlyaccesseditems'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2026080300;
+$plugin->requires  = 2022041200;
+$plugin->component = 'auth_passwordpolicyprobe';
