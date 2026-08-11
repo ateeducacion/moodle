@@ -15,19 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tiny media plugin version details.
+ * Fake auth plugin for testing the check_password_policy plugin callback.
  *
- * @package    tiny_aiplacement
- * @copyright  2024 Matt Porritt <matt.porritt@moodle.com>
+ * @package    core
+ * @copyright  Meirza Arson <meirza.arson@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tiny_aiplacement';
-$plugin->version = 2026042001;
-$plugin->requires = 2026041000;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = [
-    'tiny_media' => 2026041000,
-];
+$plugin->version   = 2026080300;
+$plugin->requires  = 2022041200;
+$plugin->component = 'auth_passwordpolicyprobe';
