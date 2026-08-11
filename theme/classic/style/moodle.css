@@ -27292,6 +27292,9 @@ img.icon {
     margin-top: 0;
   }
 }
+.editing .block_recentlyaccessedcourses .paging-bar-container {
+  margin-top: 0;
+}
 
 #block-region-side-pre .block_recentlyaccessedcourses .paging-bar-container {
   margin-top: 0;
@@ -35083,6 +35086,11 @@ img.userpicture {
   z-index: 1;
 }
 
+@media (max-width: 576px) and (max-height: 320px) {
+  .path-mod-assign .gradingtable thead tr {
+    position: static;
+  }
+}
 /**
  * Mod LTI.
  */
