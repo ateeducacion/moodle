@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,22 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * MOODLE VERSION INFORMATION.
- *
- * This file defines the current version of the core Moodle code being used.
- * This is compared against the values stored in the database to determine
- * whether upgrades should be performed (see lib/db/*.php)
+ * Fake auth plugin for testing the check_password_policy plugin callback.
  *
  * @package    core
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
+ * @copyright  Meirza Arson <meirza.arson@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$version  = 2025041409.00;              // 20250414      = branching date YYYYMMDD - do not modify!
-                                        //         RR    = release increments - 00 in DEV branches.
-                                        //           .XX = incremental changes.
-$release  = '5.0.9 (Build: 20260810)';    // Human-friendly version name
-$branch   = '500';                      // This version's branch.
-$maturity = MATURITY_STABLE;            // This version's maturity level.
+$plugin->version   = 2026080300;
+$plugin->requires  = 2022041200;
+$plugin->component = 'auth_passwordpolicyprobe';
