@@ -271,7 +271,7 @@ if ($config->stage > INSTALL_SAVE) {
 if ($config->stage == INSTALL_SAVE) {
     $CFG->early_install_lang = false;
 
-    $database = moodle_database::get_driver_instance($config->dbtype, 'native');
+    $database = moodle_database::get_driver_instance($config->dbtype, install_get_dblibrary($config->dbtype));
     if (!$database->driver_installed()) {
         $config->stage = INSTALL_DATABASETYPE;
     } else {
@@ -407,7 +407,7 @@ if ($config->stage == INSTALL_DOWNLOADLANG) {
 if ($config->stage == INSTALL_DATABASE) {
     $CFG->early_install_lang = false;
 
-    $database = moodle_database::get_driver_instance($config->dbtype, 'native');
+    $database = moodle_database::get_driver_instance($config->dbtype, install_get_dblibrary($config->dbtype));
 
     $sub = '<h3>'.$database->get_name().'</h3>'.$database->get_configuration_help();
 
@@ -491,6 +491,7 @@ if ($config->stage == INSTALL_DATABASETYPE) {
                        'mariadb'=> moodle_database::get_driver_instance('mariadb', 'native'),
                        'pgsql'  => moodle_database::get_driver_instance('pgsql',  'native'),
                        'sqlsrv' => moodle_database::get_driver_instance('sqlsrv', 'native'), // MS SQL*Server PHP driver
+                       'sqlite3' => moodle_database::get_driver_instance('sqlite3', 'pdo'),
                       );
 
     echo '<div class="row mb-4">';
