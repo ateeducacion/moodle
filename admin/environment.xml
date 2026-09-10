@@ -4523,6 +4523,7 @@
       <VENDOR name="postgres" version="13" />
       <VENDOR name="mssql" version="14.0" />
       <VENDOR name="oracle" version="19" />
+      <VENDOR name="sqlite" version="3.0" />
     </DATABASE>
     <PHP version="8.1.0" level="required">
       <RESTRICT function="restrict_php_version_84" message="unsupportedphpversion84" />
