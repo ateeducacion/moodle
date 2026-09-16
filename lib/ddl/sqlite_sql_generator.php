@@ -73,8 +73,8 @@ class sqlite_sql_generator extends sql_generator {
     /**
      * Creates one new XMLDBmysql
      */
-    public function __construct($mdb) {
-        parent::__construct($mdb);
+    public function __construct($mdb, $temptables = null) {
+        parent::__construct($mdb, $temptables);
     }
 
     /**
@@ -459,5 +459,23 @@ class sqlite_sql_generator extends sql_generator {
         // do not use php addslashes() because it depends on PHP quote settings!
         $s = str_replace("'",  "''", $s);
         return $s;
+    }
+
+    /**
+     * Given one correct xmldb_table, returns the SQL statements to create a
+     * temporary table (CREATE TEMPORARY TABLE ...), mirroring getCreateTableSQL.
+     *
+     * @param xmldb_table $xmldb_table The xmldb_table object instance.
+     * @return array of sql statements
+     */
+    public function getCreateTempTableSQL($xmldb_table) {
+        $this->temptables->add_temptable($xmldb_table->getName());
+        $sqlarr = parent::getCreateTableSQL($xmldb_table);
+        foreach ($sqlarr as $i => $sql) {
+            if (strpos($sql, 'CREATE TABLE ') === 0) {
+                $sqlarr[$i] = preg_replace('/^CREATE TABLE (.*)/s', 'CREATE TEMPORARY TABLE $1', $sql);
+            }
+        }
+        return $sqlarr;
     }
 }
