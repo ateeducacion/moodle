@@ -5325,6 +5325,7 @@
       <VENDOR name="postgres" version="17" />
       <VENDOR name="mssql" version="15.0" />
       <VENDOR name="auroramysql" version="8.0" />
+      <VENDOR name="sqlite" version="3.0" />
     </DATABASE>
     <PHP version="8.3.0" level="required">
     </PHP>
