@@ -555,33 +555,39 @@ abstract class pdo_moodle_database extends moodle_database {
     }
 
     protected function begin_transaction() {
+        $result = true;
         $this->query_start('', NULL, SQL_QUERY_AUX);
         try {
             $this->pdb->beginTransaction();
         } catch(PDOException $ex) {
             $this->lastError = $ex->getMessage();
+            $result = false;
         }
         $this->query_end($result);
     }
 
     protected function commit_transaction() {
+        $result = true;
         $this->query_start('', NULL, SQL_QUERY_AUX);
 
         try {
             $this->pdb->commit();
         } catch(PDOException $ex) {
             $this->lastError = $ex->getMessage();
+            $result = false;
         }
         $this->query_end($result);
     }
 
     protected function rollback_transaction() {
+        $result = true;
         $this->query_start('', NULL, SQL_QUERY_AUX);
 
         try {
             $this->pdb->rollBack();
         } catch(PDOException $ex) {
             $this->lastError = $ex->getMessage();
+            $result = false;
         }
         $this->query_end($result);
     }
