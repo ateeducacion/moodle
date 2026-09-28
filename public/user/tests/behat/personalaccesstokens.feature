@@ -9,22 +9,16 @@ Feature: Manage personal access tokens
       | username | firstname | lastname | email             |
       | user1    | User      | One      | user1@example.com |
       | user2    | User      | Two      | user2@example.com |
-    And the following "roles" exist:
-      | shortname    | name               | archetype |
-      | tokencreator | Token creator role | user      |
-    And the following "role capabilities" exist:
-      | role         | moodle/api:createtoken |
-      | tokencreator | allow                  |
-    And the following "role assigns" exist:
-      | user  | role         | contextlevel | reference |
-      | user1 | tokencreator | System       |           |
 
   Scenario: A user without the capability is not offered the page
-    Given I log in as "user2"
+    Given the following "role capabilities" exist:
+      | role | moodle/api:createtoken |
+      | user | prevent                |
+    And I log in as "user1"
     When I follow "Preferences" in the user menu
     Then I should not see "Personal access tokens"
 
-  Scenario: A user with the capability is offered the page in their preferences
+  Scenario: Every authenticated user is offered the page by default
     Given I log in as "user1"
     When I follow "Preferences" in the user menu
     Then I should see "Personal access tokens"
@@ -78,9 +72,6 @@ Feature: Manage personal access tokens
       | Name                         | User one token |
       | scope_core_grades_grade_read | 1              |
     And I press "Create token"
-    And the following "role assigns" exist:
-      | user  | role         | contextlevel | reference |
-      | user2 | tokencreator | System       |           |
     When I am on the "user > Personal access tokens" page logged in as "user2"
     Then I should see "You have no personal access tokens."
     And I should not see "User one token"
@@ -131,6 +122,23 @@ Feature: Manage personal access tokens
     And I click on "Apply" "button" in the "[data-region='report-filters']" "css_element"
     Then I should see "Gradebook sync" in the "reportbuilder-table" "table"
     And I should not see "Mobile app testing" in the "reportbuilder-table" "table"
+
+  Scenario: Each scope offered is labelled by its identifier as well as its summary
+    Given I am on the "user > Personal access tokens" page logged in as "user1"
+    When I click on "Create token" "link"
+    Then I should see "View gradebook"
+    And I should see "core_grades:grade:read"
+
+  Scenario: A listed scope carries the identifier an error names it by
+    Given I am on the "user > Personal access tokens" page logged in as "user1"
+    And I click on "Create token" "link"
+    And I set the following fields to these values:
+      | Name                         | Gradebook sync |
+      | scope_core_grades_grade_read | 1              |
+    When I press "Create token"
+    # The column has room for the name only, so the identifier rides on the badge itself.
+    Then I should see "View gradebook" in the "reportbuilder-table" "table"
+    And the "title" attribute of ".reportbuilder-table [data-bs-toggle='tooltip']" "css_element" should contain "core_grades:grade:read"
 
   Scenario: The expiry field offers fixed periods only
     Given I am on the "user > Personal access tokens" page logged in as "user1"

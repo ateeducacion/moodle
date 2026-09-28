@@ -31194,8 +31194,8 @@ audio.mediaplugin_html5audio {
 }
 
 .moodle-dialogue-base .moodle-dialogue-wrap {
-  background-color: var(--bs-white);
-  border: 1px solid #ccc;
+  background-color: var(--mds-bg-surface-default);
+  border: 1px solid var(--mds-border-default);
 }
 
 .modal.show {
@@ -31205,7 +31205,7 @@ audio.mediaplugin_html5audio {
 .moodle-dialogue-base .moodle-dialogue-wrap .moodle-dialogue-hd {
   display: flex;
   padding: 1rem 1rem;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--mds-border-default);
 }
 
 .moodle-dialogue-base .moodle-dialogue-wrap .moodle-dialogue-hd.yui3-widget-hd {
@@ -31237,6 +31237,7 @@ audio.mediaplugin_html5audio {
   padding: 1rem 1rem;
   margin: -1rem -1rem -1rem auto;
   position: relative;
+  color: inherit;
   background-color: transparent;
   border: 0;
   background-image: none;
@@ -31273,30 +31274,30 @@ audio.mediaplugin_html5audio {
 }
 
 .moodle-dialogue-exception .param-stacktrace label {
-  background-color: #eee;
-  border: 1px solid #ccc;
+  background-color: var(--mds-bg-surface-strong);
+  border: 1px solid var(--mds-border-default);
   border-bottom-width: 0;
 }
 
 .moodle-dialogue-exception .param-stacktrace pre {
-  border: 1px solid #ccc;
-  background-color: var(--bs-white);
+  border: 1px solid var(--mds-border-default);
+  background-color: var(--mds-bg-surface-default);
 }
 
 .moodle-dialogue-exception .param-stacktrace .stacktrace-file {
-  color: navy;
+  color: var(--mds-text-feedback-primary);
   font-size: 0.875rem;
 }
 
 .moodle-dialogue-exception .param-stacktrace .stacktrace-line {
-  color: #f0ad4e;
+  color: var(--mds-text-feedback-warning);
   font-size: 0.875rem;
 }
 
 .moodle-dialogue-exception .param-stacktrace .stacktrace-call {
-  color: #333;
+  color: var(--mds-text-default);
   font-size: 90%;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--mds-border-default);
 }
 
 .moodle-dialogue-base .moodle-dialogue .moodle-dialogue-content .moodle-dialogue-ft:empty {
@@ -31362,7 +31363,7 @@ audio.mediaplugin_html5audio {
   height: 100%;
   top: 0;
   left: 0;
-  background-color: var(--bs-white);
+  background-color: var(--mds-bg-surface-default);
   text-align: center;
   padding: 10% 0;
 }
@@ -33103,8 +33104,8 @@ blockquote {
 body.behat-site .action-menu .dropdown-subpanel-content.show {
   animation: none;
 }
-.action-menu .dropstart .dropdown-subpanel-content.dropdown-menu[data-bs-popper],
-.action-menu .dropend .dropdown-subpanel-content.dropdown-menu[data-bs-popper] {
+.action-menu .dropstart .dropdown-subpanel-content.dropdown-menu[data-bs-popper][data-popper-placement$=-start],
+.action-menu .dropend .dropdown-subpanel-content.dropdown-menu[data-bs-popper][data-popper-placement$=-start] {
   /* stylelint-disable declaration-no-important */
   top: calc(-0.5rem - var(--bs-border-width)) !important;
   /* stylelint-enable declaration-no-important */
@@ -35380,13 +35381,6 @@ table.calendartable caption {
   list-style: square;
 }
 
-.section-collapsemenu {
-  padding: 0.5rem 0.75rem;
-  color: var(--bs-gray-600);
-  line-height: 1;
-  background: none;
-  border: 0;
-}
 .section-collapsemenu .collapseall {
   display: block;
 }
@@ -35399,8 +35393,20 @@ table.calendartable caption {
 .section-collapsemenu.collapsed .expandall {
   display: block;
 }
-.section-collapsemenu:hover .collapsemenu-text {
+
+button.section-collapsemenu {
+  padding: 0.5rem 0.75rem;
+  color: var(--bs-gray-600);
+  line-height: 1;
+  background: none;
+  border: 0;
+}
+button.section-collapsemenu:hover .collapsemenu-text {
   text-decoration: underline;
+}
+
+.section-list.has-collapsemenu .section-collapsemenu {
+  display: none;
 }
 
 .courseindex-collapsemenu {
@@ -35446,8 +35452,8 @@ table.calendartable caption {
 .course-section .section-item .course-section-header .section-restrictionlock .icon {
   color: var(--bs-gray-600);
 }
-.course-section .section-item .course-content-item-content [data-for=sectioninfo] {
-  padding-left: calc(16px + 3rem);
+.course-section .section-item .course-content-item-content > [data-for=sectioninfo] {
+  padding-left: 1rem;
   padding-right: 1rem;
   padding-bottom: 1rem;
 }
@@ -35457,6 +35463,9 @@ table.calendartable caption {
   background-color: var(--bs-gray-100);
   border-bottom-right-radius: 1rem;
   border-bottom-left-radius: 1rem;
+}
+.course-section .section-item .course-section-header:has(.icons-collapse-expand) ~ .course-content-item-content > [data-for=sectioninfo] {
+  padding-left: calc(16px + 3rem);
 }
 .course-section.current > .section-item {
   position: relative;
@@ -36399,6 +36408,7 @@ body.editing#page-course-learningoutcomes .activity-item:hover:not(:has(.activit
 }
 #course-category-listings .listitem > div .idnumber {
   margin-right: 2em;
+  min-width: 0;
 }
 #course-category-listings .listitem[data-visible="0"] {
   color: var(--bs-secondary-color);
@@ -37834,11 +37844,6 @@ body.drawer-ease {
   height: auto;
 }
 
-/* The javascript is adding a style="height: 0px;" to this element - we need to set the min-height so the height is ignored. */
-.filepicker .moodle-dialogue-bd {
-  min-height: 520px;
-}
-
 .fp-navbar {
   border-color: var(--bs-gray-500);
   border-bottom: 0;
@@ -37852,6 +37857,8 @@ body.drawer-ease {
   clear: none;
   overflow: auto;
   height: 452px;
+  min-height: 150px;
+  max-height: calc(100vh - 240px);
 }
 
 .filepicker.moodle-dialogue-fullscreen .file-picker .fp-content {
@@ -38874,24 +38881,8 @@ a.ygtvspacer:hover {
 .preferences-container .preference-table .preference-row .preference-name {
   vertical-align: middle;
 }
-.preferences-container .preference-table .preference-row .disabled-message {
-  text-align: center;
-  height: 30px;
-  line-height: 30px;
-}
 .preferences-container .preference-table .preference-row.loading .preference-name .loading-icon {
   display: block;
-}
-
-.disabled-message {
-  display: none;
-}
-
-.disabled .disabled-message {
-  display: block;
-}
-.disabled .disabled-message + form {
-  display: none;
 }
 
 .general-settings-container .loading-icon {
@@ -46983,7 +46974,7 @@ div.editor_atto_toolbar button .icon {
 }
 
 .primary-navigation .navigation.primarynav-navbar .more-nav {
-  gap: var(--mds-spacing-xs);
+  gap: var(--mds-spacing-xxs);
 }
 .primary-navigation .navigation.primarynav-navbar .nav-item {
   height: 60px;
@@ -47099,7 +47090,7 @@ div.editor_atto_toolbar button .icon {
   height: 60px;
 }
 .secondary-navigation .navigation.secondarynav-tabbar .more-nav {
-  gap: var(--mds-spacing-xs);
+  gap: var(--mds-spacing-xxs);
 }
 .secondary-navigation .navigation.secondarynav-tabbar .nav-item {
   height: 60px;

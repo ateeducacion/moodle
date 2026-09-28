@@ -94,22 +94,18 @@ final class oauth2_test extends \advanced_testcase {
     /**
      * Create a client entity fixture with the specified identifier, name and description.
      *
-     * Built via create_from_record() (rather than a bare new client_entity() with only its
-     * identifier set), so that a test exercising anything that reads the client's name or
-     * description (e.g. oauth2_page::describe_client(), used by the OAuth2 login screen and
-     * the other OAuth2 pages) does not fail on those typed properties being uninitialised.
-     *
-     * @param string $identifier
      * @param string $name
      * @param string $description
      * @param bool $isconfidential Whether the client can keep a secret confidential.
      * @param bool $ispkcerequired Whether PKCE is required for this client.
+     * @param array $scopes The scope identifiers this client is approved to use.
      */
     protected function make_client_entity(
         string $name = 'Example client',
         string $description = 'This application would like to access your account.',
         bool $isconfidential = true,
         bool $ispkcerequired = false,
+        array $scopes = [],
     ): client_entity {
         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
 
@@ -120,6 +116,7 @@ final class oauth2_test extends \advanced_testcase {
             description: $description,
             isconfidential: $isconfidential,
             ispkcerequired: $ispkcerequired,
+            scopes: $scopes,
         );
 
         return $client;
@@ -1376,7 +1373,7 @@ final class oauth2_test extends \advanced_testcase {
 
         $this->resetAfterTest();
 
-        $client = $this->make_client_entity();
+        $client = $this->make_client_entity(scopes: ['moodle']);
         $requestid = $this->store_auth_request_in_session($this->make_auth_request($client, scopes: ['moodle']));
 
         $clientrepository = $this->createStub(ClientRepositoryInterface::class);
@@ -2179,7 +2176,13 @@ final class oauth2_test extends \advanced_testcase {
      * username/password alone.
      */
     public function test_do_login_valid_credentials_with_invalid_logintoken_does_not_authenticate(): void {
+        global $CFG;
+
         $this->resetAfterTest();
+
+        // Redirect error logging to the test log to avoid expected output during invalid login attempts.
+        $oldlog = ini_get('error_log');
+        ini_set('error_log', "{$CFG->dataroot}/testlog.log");
 
         // Rejected login-token attempts are logged with the requesting user agent; supply one so
         // that this does not trigger an unrelated PHP warning for a missing array key.
@@ -2218,6 +2221,8 @@ final class oauth2_test extends \advanced_testcase {
 
         // No Moodle session was established for the rejected credentials.
         $this->assertFalse(isloggedin());
+
+        ini_set('error_log', $oldlog);
     }
 
     /**
@@ -2228,7 +2233,13 @@ final class oauth2_test extends \advanced_testcase {
      * attacker could authenticate with valid credentials simply by omitting the field.
      */
     public function test_do_login_valid_credentials_missing_logintoken_does_not_bypass_validation(): void {
+        global $CFG;
+
         $this->resetAfterTest();
+
+        // Redirect error logging to the test log to avoid expected output during invalid login attempts.
+        $oldlog = ini_get('error_log');
+        ini_set('error_log', "{$CFG->dataroot}/testlog.log");
 
         // Rejected login-token attempts are logged with the requesting user agent; supply one so
         // that this does not trigger an unrelated PHP warning for a missing array key.
@@ -2262,6 +2273,8 @@ final class oauth2_test extends \advanced_testcase {
 
         // No Moodle session was established for the rejected credentials.
         $this->assertFalse(isloggedin());
+
+        ini_set('error_log', $oldlog);
     }
 
     /**
@@ -2905,7 +2918,9 @@ final class oauth2_test extends \advanced_testcase {
         $moodleuser = $this->getDataGenerator()->create_user();
         $this->setUser($moodleuser);
 
-        $client = $this->make_client_entity();
+        $client = $this->make_client_entity(
+            scopes: ['moodle'],
+        );
         $user = $this->make_user_entity($moodleuser->id);
         $authrequest = $this->make_auth_request($client, scopes: ['moodle']);
         $authrequest->setUser($user);
