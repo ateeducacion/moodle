@@ -1,13 +1,13 @@
 # Experimental SQLite for Moodle 5.3
 
 This branch ports the existing main SQLite patch (MDL-88218) to
-`v5.3.0-beta`, including its column metadata and MySQL-function fixes. The SQLite
-vendor declaration belongs to the 5.3 environment block, not 5.2.
+`MOODLE_503_STABLE`, including its column metadata and MySQL-function fixes. The
+SQLite vendor declaration belongs to the 5.3 environment block, not 5.2.
 
-Upstream has not created `MOODLE_503_STABLE` yet (2026-09-16). The PR targets
-`feature/moodle-53-baseline`, an unmodified copy of the beta tag. When upstream
-creates the stable branch, refresh the fork's baseline and retarget/rebase this
-PR onto `MOODLE_503_STABLE`. Keep the 5.2 PR and main PR independent.
+The PR first targeted `feature/moodle-53-baseline` (a copy of `v5.3.0-beta`).
+Upstream released 5.3 and created `MOODLE_503_STABLE`, so on 2026-10-03 the
+patch was rebased onto that branch (no conflicts) and the PR retargeted to it.
+Keep the 5.2 PR and main PR independent.
 
 This backend remains experimental, for demos/WASM/testing, not production.
 Container installation, HTTP, Moosh, restart and persistence checks are exercised
@@ -24,3 +24,7 @@ Integration passed on 2026-09-16 in
 code synchronization and restart. The companion suite also passed PostgreSQL
 17 and MariaDB 11.4, and a persistent 4.5.14 → 5.3 beta upgrade on PostgreSQL 17.
 See its [reproducible report](https://github.com/erseco/alpine-moodle/blob/feature/moodle-53-readiness/docs/moodle-53-migration.md).
+
+Revalidated on 2026-10-03 against `v5.3.0` / PHP 8.4 in
+[alpine-moodle PR #172](https://github.com/erseco/alpine-moodle/pull/172):
+SQLite installation, HTTP, Moosh, status checks, code sync and restart passed.
