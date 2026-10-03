@@ -231,5 +231,9 @@ $string['welcomep70'] = 'Click the "Next" button below to continue with the set 
 $string['wwwroot'] = 'Web address';
 $string['wwwrooterror'] = 'The \'Web Address\' does not appear to be valid - this Moodle installation doesn\'t appear to be there. The value below has been reset.';
 
-// Deprecated since Moodle 5.0.
+$string['pdosqlite3'] = 'SQLite 3 (PDO)';
+$string['pdosqlite3help'] = '<p>The database is where most of the Moodle settings and data are stored and must be configured here.</p>
+<p>The database file will be stored in the data directory. The database name and optional password are used to generate the filename.</p>
+<p>No external database server is required.</p>';
+
 $string['sqliteextensionisnotpresentinphp'] = 'PHP has not been properly configured with the SQLite extension.  Please check your php.ini file or recompile PHP.';
