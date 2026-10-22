@@ -58,6 +58,17 @@ Feature: Manage personal access tokens
     And I should not see "This secret is shown only once"
     And I should not see "Your new token"
 
+  @javascript
+  Scenario: Creating a token notifies its owner
+    Given I am on the "user > Personal access tokens" page logged in as "user1"
+    And I click on "Create token" "link"
+    And I set the following fields to these values:
+      | Name                         | Attendance export |
+      | scope_core_grades_grade_read | 1                 |
+    And I press "Create token"
+    When I open the notification popover
+    Then I should see "New personal access token \"Attendance export\" created on your account" in the ".popover-region-notifications" "css_element"
+
   Scenario: A token cannot be created without a scope
     Given I am on the "user > Personal access tokens" page logged in as "user1"
     And I click on "Create token" "link"
@@ -193,3 +204,12 @@ Feature: Manage personal access tokens
     When I click on "Revoke" "button" in the "Gradebook sync" "table_row"
     Then I should see "Token revoked"
     And I should see "You have no personal access tokens."
+
+  @javascript
+  Scenario: The expiring soon warning opens when its icon is clicked
+    Given the following "personal access tokens" exist:
+      | user  | name           | expirytime  |
+      | user1 | Gradebook sync | ##+2 days## |
+    And I am on the "user > Personal access tokens" page logged in as "user1"
+    When I click on "Expires within 3 days" "button" in the "Gradebook sync" "table_row"
+    Then I should see "Expires within 3 days" in the ".popover" "css_element"
