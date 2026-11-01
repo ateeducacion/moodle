@@ -827,6 +827,7 @@ class page_requirements_manager {
                             ['referencesexist', 'repository'],
                             ['select', 'repository'],
                             ['invalidfiletypetitle', 'repository'],
+                            ['filenametoolongtitle', 'repository'],
                         ],
                     ];
                     break;
@@ -880,6 +881,7 @@ class page_requirements_manager {
                             ['maxareabytesreached', 'moodle'], ['serverconnection', 'error'],
                             ['changesmadereallygoaway', 'moodle'], ['complete', 'moodle'],
                             ['invalidfiletypetitle', 'repository'],
+                            ['filenametoolongtitle', 'repository'],
                             ['upload_error_folders_not_supported', 'repository_upload'],
                             ['upload_error_folders_not_supported_title', 'repository_upload'],
                         ],
@@ -1879,9 +1881,6 @@ EOF;
 
         // First the skip links.
         $output = $renderer->render_skip_links($this->skiplinks);
-
-        // Include the Polyfills.
-        $output .= html_writer::script('', $this->js_fix_url('/lib/polyfills/polyfill.js'));
 
         // YUI3 JS needs to be loaded early in the body. It should be cached well by the browser.
         $output .= $this->get_yui3lib_headcode();
