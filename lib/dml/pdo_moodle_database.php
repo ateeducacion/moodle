@@ -296,7 +296,7 @@ abstract class pdo_moodle_database extends moodle_database {
         $rs = $this->get_recordset_sql($sql, $params);
         if (!$rs->valid()) {
             $rs->close(); // Not going to iterate (but exit), close rs
-            return false;
+            return array();
         }
         $result = array();
         foreach($rs as $value) {
@@ -326,7 +326,7 @@ abstract class pdo_moodle_database extends moodle_database {
         $rs = $this->get_recordset_sql($sql, $params, $limitfrom, $limitnum);
         if (!$rs->valid()) {
             $rs->close(); // Not going to iterate (but exit), close rs
-            return false;
+            return array();
         }
         $objects = array();
         foreach($rs as $value) {
