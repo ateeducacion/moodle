@@ -42,6 +42,20 @@ define('INSTALL_DATABASE',      5);
 define('INSTALL_SAVE',          6);
 
 /**
+ * Return the database library for the given database type.
+ *
+ * @param string $dbtype
+ * @return string
+ */
+function install_get_dblibrary(string $dbtype): string {
+    $libraries = array(
+        'sqlite3' => 'pdo',
+    );
+
+    return $libraries[$dbtype] ?? 'native';
+}
+
+/**
  * Tries to detect the right www root setting.
  * @return string detected www root
  */
