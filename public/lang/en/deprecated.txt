@@ -63,7 +63,6 @@ language_help,core_badges
 version_help,core_badges
 atto_h5p,core_h5p
 atto_h5p_description,core_h5p
-sqliteextensionisnotpresentinphp,core_install
 siteevent,core_calendar
 categoryevent,core_calendar
 courseevent,core_calendar
