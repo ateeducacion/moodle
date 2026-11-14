@@ -34,7 +34,7 @@ declare const M: {
 };
 
 /** The shape of the Moodle page configuration object (`M.cfg`). */
-export interface MoodleConfig {
+export type MoodleConfig = {
     /** The root URL of the Moodle site (e.g. `https://example.com/moodle`). */
     wwwroot: string;
     /** The base URL for the REST API. */
@@ -86,12 +86,18 @@ export interface MoodleConfig {
     /** List of JS deprecation warnings to suppress. */
     deprecationignorelist: string[];
     /** OpenTelemetry trace parent ID. */
-    traceId: string;
+    traceId: string | null;
     /** Whether developer debug mode is enabled. Present only when true. */
     developerdebug?: boolean;
     /** Whether a Behat test is running. Present only when true. */
     behatsiterunning?: boolean;
-}
+
+    /** Whether requests made via a Fetch batcher should be sent as a single ODATA $batch request. */
+    batchFetchRequests: boolean;
+
+    /** Whether to batch cacheable asset requests (those with a cache key, e.g. templates and strings). */
+    batchApiAssetRequests: boolean;
+};
 
 /**
  * The live Moodle page configuration object.
@@ -110,4 +116,5 @@ export default config;
  * @returns `true` if JavaScript caching is enabled, or `false` if it is disabled.
  * @see M.cfg.jsrev
  */
+/* eslint-disable-next-line @typescript-eslint/naming-convention -- Released API name from 5.3. */
 export const isJSCachingEnabled = config.jsrev !== -1;

@@ -5,6 +5,7 @@
 // Variables.
 $activity-item-padding: 1.25rem !default;
 $activity-border-radius: 1rem !default;
+$activity-controls-height: $mds-scale-900 !default;
 $divider-color: var(--#{$prefix}gray-200) !default;
 $divider-stripe-color: var(--#{$prefix}gray-100) !default;
 $divider-width: 1px !default;
@@ -295,7 +296,8 @@ button.section-collapsemenu {
         background-color: var(--mds-bg-surface-default);
     }
 
-    &:focus-within:not(:has(.delegated-section)) {
+    // The title rename trigger draws its own focus ring, so the card is only outlined for its other controls.
+    &:focus-within:not(:has(.delegated-section)):not(:has(.quickeditlink:focus-visible, .inplaceeditingon)) {
         outline: $mds-stroke-weight-md solid var(--mds-border-interactive-primary-default);
     }
 
@@ -327,6 +329,11 @@ button.section-collapsemenu {
     // Custom styles for activity cards while editing.
     .editing & {
         cursor: move;
+        // The icon has no container while editing.
+        .activity-icon .activityiconcontainer {
+            padding: 0;
+            background-color: transparent;
+        }
         .a {
             cursor: pointer;
         }
@@ -358,27 +365,27 @@ button.section-collapsemenu {
     .activity-grid {
         display: grid;
         align-items: center;
-        grid-template-columns: min-content 1fr min-content min-content min-content;
-        grid-template-rows: 1fr repeat(5, min-content);
+        grid-template-columns: 1fr min-content min-content min-content min-content;
         grid-template-areas:
-            "icon   name          groupmode      completion    actions"
-            "icon   altcontent    altcontent     altcontent    altcontent"
-            "icon   afterlink     afterlink      afterlink     afterlink"
-            "visibility   visibility   visibility     visibility    visibility"
-            "dates        dates        dates          dates         dates"
-            "availability availability availability   availability  availability";
+            "icon          groupmode     visibility    completion    actions"
+            "name          name          name          name          name"
+            "altcontent    altcontent    altcontent    altcontent    altcontent"
+            "afterlink     afterlink     afterlink     afterlink     afterlink"
+            "dates         dates         dates         dates         dates"
+            "availability  availability  availability  availability  availability";
         @include media-breakpoint-down(sm) {
-            grid-template-columns: min-content 1fr min-content min-content min-content;
-            grid-template-rows: 1fr repeat(4, min-content);
+            grid-template-columns: 1fr min-content min-content min-content;
             grid-template-areas:
-                "icon          name          actions"
-                "altcontent    altcontent    altcontent"
-                "afterlink     afterlink     afterlink"
-                "visibility    visibility    visibility"
-                "dates         dates         dates"
-                "groupmode     groupmode     groupmode"
-                "completion    completion    completion"
-                "availability  availability  availability";
+                "icon          groupmode     visibility    actions"
+                "name          name          name          name"
+                "altcontent    altcontent    altcontent    altcontent"
+                "afterlink     afterlink     afterlink     afterlink"
+                "dates         dates         dates         dates"
+                "availability  availability  availability  availability"
+                "completion    completion    completion    completion";
+        }
+        &:not(.noname-grid) .activity-badges {
+            margin-inline-start: map-get($spacers, 2);
         }
     }
     // Activity card specific grid layout for activities without name.
@@ -390,14 +397,13 @@ button.section-collapsemenu {
             "afterlink     afterlink        afterlink     afterlink"
             "availability  availability     availability  availability";
         @include media-breakpoint-down(sm) {
-            grid-template-columns: 1fr min-content;
+            grid-template-columns: 1fr min-content min-content;
             grid-template-areas:
-                "visibility    actions"
-                "altcontent    altcontent"
-                "groupmode     groupmode"
-                "afterlink     afterlink"
-                "completion    completion"
-                "availability  availability";
+                "visibility    groupmode     actions"
+                "altcontent    altcontent    altcontent"
+                "afterlink     afterlink     afterlink"
+                "availability  availability  availability"
+                "completion    completion    completion";
         }
     }
 
@@ -406,10 +412,44 @@ button.section-collapsemenu {
         .actions {
             position: relative;
         }
+        .btn-icon {
+            width: $activity-controls-height;
+            height: $activity-controls-height;
+        }
     }
 
     .activity-icon {
         grid-area: icon;
+        gap: $mds-spacing-xxs;
+
+        // Give the server-rendered fallback the footprint of the ActivityIcon that replaces it, to avoid a layout shift.
+        [data-react-component] {
+            display: flex;
+        }
+        .activityiconcontainer {
+            box-sizing: content-box;
+            padding: var(--mds-spacing-xs);
+            width: var(--mds-icons-lg);
+            height: var(--mds-icons-lg);
+            max-width: var(--mds-icons-lg);
+            max-height: var(--mds-icons-lg);
+        }
+
+        // The icon is smaller on small screens, except while editing (see core_course/ActivityIcon).
+        @include media-breakpoint-down(sm) {
+            body:not(.editing) & .activityiconcontainer {
+                width: var(--mds-icons-sm);
+                height: var(--mds-icons-sm);
+                max-width: var(--mds-icons-sm);
+                max-height: var(--mds-icons-sm);
+            }
+        }
+    }
+
+    .activity-type-label {
+        @include font-size($font-size-sm);
+        font-weight: $font-weight-medium;
+        color: var(--mds-text-muted);
     }
 
     .activity-dates {
@@ -440,6 +480,7 @@ button.section-collapsemenu {
     }
     .activity-name-area {
         grid-area: name;
+        margin-top: $mds-spacing-xs;
         // Prevent bootstrap strech-link from covering the inplace editable button using z-index.
         .activityname {
             color: var(--#{$prefix}gray-700);
@@ -453,7 +494,6 @@ button.section-collapsemenu {
             .inplaceeditable .quickeditlink {
                 position: relative;
                 z-index: 2;
-                margin-left: map-get($spacers, 2);
             }
         }
         .activitybadge {
@@ -475,7 +515,9 @@ button.section-collapsemenu {
         justify-self: end;
         button,
         a[role="button"] {
-            min-height: map-get($iconsizes, 5);
+            height: $activity-controls-height;
+            min-height: 0;
+            padding-block: 0;
         }
         @include media-breakpoint-down(sm) {
             width: 100%;
@@ -509,35 +551,44 @@ button.section-collapsemenu {
     .activity-groupmode-info {
         grid-area: groupmode;
         justify-self: end;
-        .groupmode-information {
-            height: map-get($iconsizes, 5);
-            width: map-get($iconsizes, 5);
-            @include border-radius();
-            .icon {
-                width: map-get($iconsizes, 3);
-                height: map-get($iconsizes, 3);
-            }
+        .groupmode-trigger .icon,
+        .groupmode-indicator .icon {
+            margin: 0;
         }
-        .groupmode-icon-info {
-            display: none;
+        .groupmode-trigger.mds-btn {
+            block-size: $activity-controls-height;
+            padding-block: 0;
+            white-space: nowrap;
         }
+
         @include media-breakpoint-down(sm) {
-            width: 100%;
-            margin-top: map-get($spacers, 2);
-            padding-top: map-get($spacers, 2);
-            border-top: $border-width solid $border-color;
-            .groupmode-information {
-                width: auto;
-                font-size: inherit;
-                padding: 0 map-get($spacers, 2);
+            .groupmode-trigger.mds-btn {
+                inline-size: $activity-controls-height;
+                justify-content: center;
+                padding-inline: 0;
             }
-            .groupmode-icon-info {
-                display: inline;
+
+            .groupmode-trigger.mds-btn .groupmode-icon,
+            .groupmode-trigger.mds-btn .groupmode-icon .icon {
+                display: inline-flex;
+                inline-size: auto;
             }
-            // Disable v-parent-focus behaviour on small devices to always show the groupmode button.
-            .v-parent-focus {
-                opacity: 1;
-                visibility: visible;
+            .groupmode-icon-info,
+            .mds-dropdown-trigger__chevron {
+                display: none;
+            }
+        }
+
+        .groupmode-indicator {
+            color: var(--mds-text-subtle);
+            .icon {
+                inline-size: $mds-icons-xs;
+                block-size: $mds-icons-xs;
+                font-size: $mds-icons-xs;
+            }
+            &:focus-visible {
+                outline: $mds-stroke-weight-md solid var(--mds-focus-default);
+                outline-offset: $mds-spacing-offset;
             }
         }
     }
@@ -550,6 +601,56 @@ button.section-collapsemenu {
                 font-size: 12px;
                 width: 12px;
                 height: 12px;
+            }
+        }
+    }
+
+    .activity-visibility {
+        .activity-visibility-trigger,
+        .activity-visibility-indicator {
+            .icon {
+                margin: 0;
+                // Centre glyphs wider than the icon box, such as eye-slash.
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        // Match the height of the controls in the activity icon row.
+        .activity-visibility-trigger.mds-btn {
+            block-size: $activity-controls-height;
+            padding-block: 0;
+            white-space: nowrap;
+        }
+        .activity-visibility-icon {
+            display: inline-flex;
+            align-items: center;
+        }
+        .activity-visibility-indicator {
+            gap: $mds-spacing-xxs;
+            color: var(--mds-text-subtle);
+            font-size: $mds-font-size-paragraph-small;
+            // Same focus ring as the design system controls in the row.
+            &:focus-visible {
+                outline: $mds-stroke-weight-md solid var(--mds-focus-default);
+                outline-offset: $mds-spacing-offset;
+            }
+            .icon {
+                inline-size: $mds-icons-xs;
+                block-size: $mds-icons-xs;
+                font-size: $mds-icons-xs;
+            }
+        }
+        // Show the server-rendered trigger as icon only on small screens until the React one replaces it.
+        @include media-breakpoint-down(sm) {
+            .activity-visibility-trigger.mds-btn:not(.mds-btn--icon-only) {
+                justify-content: center;
+                inline-size: $activity-controls-height;
+                padding-inline: 0;
+                .activity-visibility-label,
+                .mds-dropdown-trigger__chevron {
+                    display: none;
+                }
             }
         }
     }
@@ -698,9 +799,104 @@ button.section-collapsemenu {
     }
 }
 
+/* Activity and section title rename trigger */
+.activity-item .activity-name-area,
+.course-section-header [data-for="section_title"] {
+    .inplaceeditable .quickeditlink {
+        // One box around the text and the taller pencil, so the focus ring is a single rectangle.
+        display: inline-flex;
+        align-items: center;
+        gap: $mds-spacing-xxs;
+        vertical-align: middle;
+        border-radius: $mds-border-radius-xs;
+
+        // The pencil is part of the link, so hovering it must not restyle the title text.
+        &:hover:not(:has(.quickediticon:hover)) {
+            color: var(--mds-text-link-primary-hover);
+        }
+
+        &:focus,
+        &:focus-visible {
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        // The offset stands in for padding, so the ring does not shift the layout when it appears.
+        &:focus-visible {
+            outline: $mds-stroke-weight-md solid var(--mds-border-interactive-primary-default);
+            outline-offset: $mds-spacing-xxs;
+        }
+    }
+
+    .inplaceeditable .quickediticon {
+        display: inline-flex;
+        width: $mds-scale-900;
+        height: $mds-scale-900;
+        padding: $mds-spacing-none;
+        gap: $mds-spacing-none;
+        justify-content: center;
+        align-items: center;
+        vertical-align: middle;
+        border-radius: $mds-border-radius-md;
+        // The pencil sits inside the link, so it needs its own colour to stay unchanged when the title is hovered.
+        color: var(--mds-text-subtle);
+        visibility: hidden;
+
+        .icon {
+            width: $mds-icons-xs !important; /* stylelint-disable-line declaration-no-important */
+            height: $mds-icons-xs !important; /* stylelint-disable-line declaration-no-important */
+            max-width: $mds-icons-xs !important; /* stylelint-disable-line declaration-no-important */
+            max-height: $mds-icons-xs !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+            font-size: $mds-icons-xs !important; /* stylelint-disable-line declaration-no-important */
+
+            // Keep the link underline from extending beneath the pencil glyph.
+            &::before {
+                display: inline-block;
+            }
+        }
+
+        &:hover {
+            background-color: var(--mds-bg-interactive-secondary-hover);
+        }
+
+        // Touch devices cannot hover to reveal the pencil.
+        @media (hover: none) {
+            visibility: visible;
+        }
+
+        // The display above outranks the core .visibleifjs rule, and renaming needs JavaScript.
+        body:not(.jsenabled) & {
+            display: none;
+        }
+    }
+}
+
+.activity-item.hiddenactivity .activity-name-area .inplaceeditable .quickediticon {
+    color: var(--mds-text-muted);
+}
+
+// The section collapse button follows the same hover treatment as the title pencil.
+.course-section-header .btn-icon.icons-collapse-expand:hover {
+    border: $mds-stroke-weight-sm solid var(--mds-border-default);
+    border-radius: $mds-border-radius-md;
+    background-color: var(--mds-bg-interactive-secondary-hover);
+    outline: 0;
+}
+
+// Reveal the pencil from the row that owns the title. Only the innermost activity card counts, so an activity
+// inside a subsection does not reveal the subsection pencil.
+.activity-item:not(:has(.activity-item)):is(:hover, :focus-within) .activity-name-area .inplaceeditable .quickediticon,
+.course-section-header:is(:hover, :focus-within) [data-for="section_title"] .inplaceeditable .quickediticon {
+    visibility: visible;
+}
+
 /* Bulk editing */
 
 .bulkenabled {
+    .activity-name-area .inplaceeditable .quickediticon {
+        display: none;
+    }
     .bulk-hidden {
         display: none !important; // stylelint-disable-line declaration-no-important
     }
@@ -724,6 +920,10 @@ button.section-collapsemenu {
         }
     }
     .activity-item {
+        // Keep the card outline when its title receives focus in bulk mode.
+        &:focus-within:not(:has(.delegated-section)):not(:has(.inplaceeditingon)) {
+            outline: $mds-stroke-weight-md solid var(--mds-border-interactive-primary-default);
+        }
         .bulkselect {
             float: left;
             margin-left: calc(-#{$activity-item-padding} - 1.75rem);
@@ -1166,5 +1366,40 @@ body.editing#page-course-learningoutcomes .activity-item {
     &:hover:not(:has(.activity:hover)),
     &.selected {
         outline: none;
+    }
+}
+
+// The portalled menu needs a stacking order to stay above positioned course controls.
+.mds-dropdown-menu:has(> .activity-visibility-menu) {
+    z-index: $zindex-dropdown;
+}
+
+// Keep the items as direct flex items of the menu, so its gap stops one focus outline overlapping the next item.
+.activity-visibility-menu {
+    display: contents;
+    // Keep the menu at the design system minimum width, wrapping long labels and descriptions.
+    > .mds-dropdown-item {
+        max-inline-size: 13.5625rem; /* 217px */
+        .mds-dropdown-item__label {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
+    }
+}
+
+.mds-dropdown-menu:has(> .groupmode-menu) {
+    z-index: $zindex-dropdown;
+}
+
+.groupmode-menu {
+    display: contents;
+    > .mds-dropdown-item {
+        max-inline-size: 13.5625rem; /* 217px */
+        .mds-dropdown-item__label {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
     }
 }

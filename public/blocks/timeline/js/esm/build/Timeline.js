@@ -1,8 +1,8 @@
-import{useState as i,useCallback as a}from"react";import b from"@moodle/lms/block_timeline/nav/DayFilter";import x from"@moodle/lms/block_timeline/nav/ViewSelector";import C from"@moodle/lms/block_timeline/nav/Search";import R from"@moodle/lms/block_timeline/views/DatesView";import E from"@moodle/lms/block_timeline/views/CoursesView";import{setUserPreference as h}from"./repository";import{jsx as e,jsxs as t}from"react/jsx-runtime";/**
+import{useState as i,useCallback as a}from"react";import{setUserPreference as h}from"./repository";import b from"@moodle/lms/block_timeline/nav/DayFilter";import x from"@moodle/lms/block_timeline/nav/ViewSelector";import C from"@moodle/lms/block_timeline/nav/Search";import R from"@moodle/lms/block_timeline/views/DatesView";import E from"@moodle/lms/block_timeline/views/CoursesView";import{jsx as e,jsxs as t}from"react/jsx-runtime";/**
  * Root Timeline block React component.
  *
  * Mounted automatically via data-react-component="@moodle/lms/block_timeline/Timeline"
- * by core/react_autoinit.
+ * by core/reactAutoinit.
  *
  * @module     block_timeline/Timeline
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

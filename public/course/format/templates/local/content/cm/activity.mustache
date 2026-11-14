@@ -94,15 +94,11 @@
         {{/hasdates}}
     {{/dates}}
 
-    {{! Visibility }}
-    {{$ core_courseformat/local/content/cm/badges }}
-        {{> core_courseformat/local/content/cm/badges }}
-    {{/ core_courseformat/local/content/cm/badges }}
 
     {{! Group mode }}
     {{#groupmodeinfo}}
         <div
-            class="activity-groupmode-info align-self-start ms-sm-2"
+            class="activity-groupmode-info ms-sm-2"
             data-region="groupmode"
         >
             {{$ core_courseformat/local/content/cm/groupmode}}
@@ -111,10 +107,15 @@
         </div>
     {{/groupmodeinfo}}
 
+    {{! Visibility }}
+    {{$ core_courseformat/local/content/cm/badges }}
+        {{> core_courseformat/local/content/cm/badges }}
+    {{/ core_courseformat/local/content/cm/badges }}
+
     {{! Completion }}
     {{#completion}}
         {{#hascompletion}}
-            <div class="activity-completion align-self-start ms-sm-2">
+            <div class="activity-completion ms-sm-2">
                 {{$ core_courseformat/local/content/cm/activity_info}}
                     {{> core_courseformat/local/content/cm/activity_info}}
                 {{/ core_courseformat/local/content/cm/activity_info}}
@@ -124,7 +125,7 @@
 
     {{! Action menu }}
     {{#controlmenu}}
-        <div class="activity-actions bulk-hidden align-self-start ms-sm-2">
+        <div class="activity-actions bulk-hidden ms-sm-2">
             {{$ core_courseformat/local/content/cm/controlmenu }}
                 {{> core_courseformat/local/content/cm/controlmenu }}
             {{/ core_courseformat/local/content/cm/controlmenu }}

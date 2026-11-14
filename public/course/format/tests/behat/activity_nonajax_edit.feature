@@ -60,7 +60,7 @@ Feature: Validate some activity editing has a non-ajax alternative
     And I should see "Show on course page"
     And I should see "Hide on course page"
     And I should see "Make available but don't show on course page"
-    And ".activity-badges" "css_element" should not exist
+    And I should see "Available on course page" in the "Activity sample 1" "core_courseformat > Activity visibility"
     When I click on "Hide on course page" "link" in the "Activity sample 1" "activity"
     Then I should see "Hidden from students" in the "Activity sample 1" "core_courseformat > Activity visibility"
     And I should not see "Available but not shown on course page" in the "Activity sample 1" "core_courseformat > Activity visibility"
@@ -68,7 +68,7 @@ Feature: Validate some activity editing has a non-ajax alternative
     And I should not see "Hidden from students" in the "Activity sample 1" "core_courseformat > Activity visibility"
     And I should see "Available but not shown on course page" in the "Activity sample 1" "core_courseformat > Activity visibility"
     And I click on "Show on course page" "link" in the "Activity sample 1" "activity"
-    And ".activity-badges" "css_element" should not exist
+    And I should see "Available on course page" in the "Activity sample 1" "core_courseformat > Activity visibility"
 
   Scenario: Duplicate activity can be done without ajax
     Given I log in as "teacher1"
@@ -91,18 +91,18 @@ Feature: Validate some activity editing has a non-ajax alternative
       | G1   | C1     | GI1      |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And "No groups" "icon" should exist in the "Activity sample 1" "activity"
-    And "Visible groups" "icon" should not exist in the "Activity sample 1" "activity"
-    And "Separate groups" "icon" should not exist in the "Activity sample 1" "activity"
+    And "No groups" "button" should exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Visible" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Separate" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
     When I click on "Separate groups" "link" in the "Activity sample 1" "activity"
-    And "No groups" "icon" should not exist in the "Activity sample 1" "activity"
-    And "Visible groups" "icon" should not exist in the "Activity sample 1" "activity"
-    And "Separate groups" "icon" should exist in the "Activity sample 1" "activity"
+    And "No groups" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Visible" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Separate" "button" should exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
     And I click on "Visible groups" "link" in the "Activity sample 1" "activity"
-    And "No groups" "icon" should not exist in the "Activity sample 1" "activity"
-    And "Visible groups" "icon" should exist in the "Activity sample 1" "activity"
-    And "Separate groups" "icon" should not exist in the "Activity sample 1" "activity"
+    And "No groups" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Visible" "button" should exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Separate" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
     And I click on "No groups" "link" in the "Activity sample 1" "activity"
-    And "No groups" "icon" should exist in the "Activity sample 1" "activity"
-    And "Visible groups" "icon" should not exist in the "Activity sample 1" "activity"
-    And "Separate groups" "icon" should not exist in the "Activity sample 1" "activity"
+    And "No groups" "button" should exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Visible" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"
+    And "Separate" "button" should not exist in the "Activity sample 1" "core_courseformat > Activity groupmode"

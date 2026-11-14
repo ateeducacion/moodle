@@ -340,6 +340,8 @@ class page_requirements_manager {
                 'currentlogin'          => !empty($USER->currentlogin) ? (int) $USER->currentlogin : null,
                 'deprecationignorelist'       => !empty($CFG->jsdeprecationignorelist) ? $CFG->jsdeprecationignorelist : [],
                 'traceId'               => \core\telemetry::get_trace_parent_id(),
+                'batchFetchRequests'    => $CFG->batch_fetch_requests ?? true,
+                'batchApiAssetRequests' => (bool) ($CFG->batch_api_asset_requests ?? false),
             ];
             if ($CFG->debugdeveloper) {
                 $this->M_cfg['developerdebug'] = true;
@@ -1131,7 +1133,7 @@ class page_requirements_manager {
     public function react_mustache_autoinit(): string {
         return html_writer::tag(
             tagname: 'script',
-            contents: 'import "@moodle/lms/core/react_autoinit";',
+            contents: 'import "@moodle/lms/core/reactAutoinit";',
             attributes: [
                 'type' => 'module',
             ],
@@ -1642,10 +1644,10 @@ EOF;
             'core/deprecated' => '@moodle/lms/core/deprecated:default',
             'core/fetch' => '@moodle/lms/core/fetch:default',
             'core/log' => '@moodle/lms/core/log:default',
-            'core/localstorage' => '@moodle/lms/core/Storage:localStore',
+            'core/localstorage' => '@moodle/lms/core/storage:localStore',
             'core/pending' => '@moodle/lms/core/pending:default',
-            'core/sessionstorage' => '@moodle/lms/core/Storage:sessionStore',
-            'core/storagewrapper' => '@moodle/lms/core/Storage:default',
+            'core/sessionstorage' => '@moodle/lms/core/storage:sessionStore',
+            'core/storagewrapper' => '@moodle/lms/core/storage:default',
             'core/url' => '@moodle/lms/core/url',
             'core/utils' => '@moodle/lms/core/utils',
 
