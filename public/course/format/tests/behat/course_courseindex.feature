@@ -144,6 +144,25 @@ Feature: Course index depending on role
     And I should not see "Highlighted" in the "#courseindex-content [data-for='section'][data-number='2']" "css_element"
 
   @javascript
+  Scenario: Clicking a section name in the course index opens the section
+    Given I am on the "Course 1" course page logged in as teacher1
+    When I click on "Section 2" "link" in the "courseindex-content" "region"
+    Then the url should match "(section\.php|#section-2)"
+    And I should see "Activity sample 2" in the "courseindex-content" "region"
+
+  @javascript
+  Scenario: Course index shows the icon of every activity
+    Given the following "activities" exist:
+      | activity | name           | intro     | course | idnumber | section |
+      | label    | Text and media | Some text | C1     | label1   | 1       |
+    When I am on the "Course 1" course page logged in as teacher1
+    And I should see "Text and media" in the "courseindex-content" "region"
+    And I wait until the page is ready
+    # The activities with a view page, and the ones without it, get the design system icon.
+    Then "Activity sample 1" "core_courseformat > Course index activity icon" should exist
+    And "Text and media" "core_courseformat > Course index activity icon" should exist
+
+  @javascript
   Scenario: Course index toggling
     Given the following "activities" exist:
       | activity | name                         | course | idnumber | section |
@@ -166,8 +185,13 @@ Feature: Course index depending on role
     And I should see "Activity sample 2" in the "courseindex-content" "region"
     And I should see "Section 3" in the "courseindex-content" "region"
     And I should see "Activity sample 3" in the "courseindex-content" "region"
-    # Expand section 1 via section name.
+    # Clicking the section name does not expand the section.
     And I click on "Section 1" "link" in the "courseindex-content" "region"
+    And I should see "Section 1" in the "courseindex-content" "region"
+    And I should not see "Activity sample 1" in the "courseindex-content" "region"
+    And I should not see "Second activity in section 1" in the "courseindex-content" "region"
+    # Expand section 1 via chevron.
+    And I click on "Expand" "link" in the ".courseindex-section[data-number='1']" "css_element"
     And I should see "Section 1" in the "courseindex-content" "region"
     And I should see "Activity sample 1" in the "courseindex-content" "region"
     And I should see "Second activity in section 1" in the "courseindex-content" "region"

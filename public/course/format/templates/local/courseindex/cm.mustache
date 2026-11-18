@@ -29,7 +29,10 @@
         "uniqid": "0",
         "accessvisible": 1,
         "hascmrestrictions": 0,
-        "indent": 1
+        "indent": 1,
+        "iconurl": "../../../pix/help.svg",
+        "iconclass": "",
+        "iconprops": "{\"icon\":\"announcement\",\"alt\":\"\",\"container\":\"none\",\"size\":\"sm\"}"
     }
 }}
 <li class="courseindex-item
@@ -52,6 +55,22 @@
 >
     {{^hasdelegatedsection}}
         <span class="completioninfo" data-for="cm_completion" data-value="NaN"></span>
+        {{!
+            The activity icon. The react_autoinit attributes are written by hand, not with the react helper, because
+            the helper always renders a div. This keeps the span container and the legacy icon image, which the
+            design system icon (iconprops) replaces once the React component is mounted.
+        }}
+        {{#iconurl}}
+            <span class="courseindex-icon"
+                data-for="cm_icon"
+                {{#iconprops}}
+                data-react-component="@moodle/lms/core_course/ActivityIcon"
+                data-react-props="{{iconprops}}"
+                {{/iconprops}}
+            >
+                <img src="{{iconurl}}" class="activityicon {{iconclass}}" alt="">
+            </span>
+        {{/iconurl}}
         {{#uservisible}}
             <a
                     class="courseindex-link text-truncate"

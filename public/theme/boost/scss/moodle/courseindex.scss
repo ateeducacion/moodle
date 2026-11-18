@@ -1,56 +1,45 @@
 $courseindex-link-color: $list-group-action-color !default;
-$courseindex-link-color-selected: color-contrast($primary) !default;
+// Text colour of the active row. Null keeps the normal colours of the row, which sits on a light background.
+$courseindex-link-color-selected: null !default;
 $courseindex-link-dimmed-color: var(--#{$prefix}gray-600) !default;
 $courseindex-link-hover-color: var(--#{$prefix}black) !default;
 $courseindex-item-dragging-bg: shift-color($info, -90%) !default;
 $courseindex-item-dragging-border: shift-color($info, -70%) !default;
 $courseindex-item-active-border: var(--#{$prefix}gray-300) !default;
 $courseindex-item-active-bg: var(--#{$prefix}gray-100) !default;
-$courseindex-item-page-bg: $primary !default;
-$courseindex-item-padding-y: 0.5rem;
-$courseindex-item-padding-x: 0.5rem;
-$courseindex-item-radius: $border-radius !default;
-$courseindex-item-current: $primary !default;
+$courseindex-item-page-bg: var(--mds-bg-surface-default, #{$white}) !default;
+$courseindex-item-current: var(--mds-border-interactive-primary-default, var(--#{$prefix}primary)) !default;
+
+// Completion glyphs: the Font Awesome 6.5.2 check and xmark (pix/i/checked.svg, pix/i/invalid.svg), 8px high and centred
+// in a 12x12 box so that the glyph is placed exactly like the circle it sits in.
+// Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free
+// They are inline because a pix image cannot be centred in the box and would snap to the pixel grid on its own.
+// stylelint-disable function-url-scheme-disallowed-list
+$courseindex-completion-glyph-check: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path transform='translate(2.5 2) scale(.015625)' d='M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/></svg>") !default;
+$courseindex-completion-glyph-xmark: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path transform='translate(3 2) scale(.015625)' d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/></svg>") !default;
+// stylelint-enable function-url-scheme-disallowed-list
 
 @mixin courseindex-item-hover() {
-    &:hover,
-    &:focus {
-        color: $courseindex-link-hover-color;
+    // The hover surface belongs to a single row, not to an activity with a subsection and all its content.
+    &:hover:not(:has(> .delegated-section)) {
+        background-color: var(--mds-bg-surface-subtle, var(--#{$prefix}gray-100));
 
-        .courseindex-link,
-        .courseindex-chevron {
-            color: $courseindex-link-hover-color;
-            cursor: pointer;
-        }
-        &.dimmed {
-            color: $courseindex-link-hover-color;
-
-            .courseindex-link,
-            .courseindex-chevron {
-                color: $courseindex-link-hover-color;
-            }
-        }
         &.draggable {
             cursor: move;
         }
-        &.pageitem,
-        .pageitem {
-            background-color: darken($courseindex-item-page-bg, 7.5%);
-            color: darken($courseindex-link-color-selected, 10%);
-            .courseindex-link,
-            .courseindex-chevron {
-                color: darken($courseindex-link-color-selected, 10%);
-                a {
-                    color: darken($courseindex-link-color-selected, 10%);
-                }
-            }
+    }
+
+    .courseindex-link,
+    .courseindex-chevron {
+        &:hover {
+            cursor: pointer;
         }
     }
 }
 
 @mixin courseindex-item-dragging() {
     &.dragging {
-        border: $border-width solid $courseindex-item-dragging-border;
+        box-shadow: inset 0 0 0 $border-width $courseindex-item-dragging-border;
         background-color: $courseindex-item-dragging-bg;
     }
 }
@@ -74,6 +63,13 @@ $courseindex-item-current: $primary !default;
                     color: $courseindex-link-hover-color;
                     text-decoration: none;
                 }
+                // The 2px ring of the course index, instead of the default .aabtn ring.
+                &:focus {
+                    box-shadow: none;
+                }
+                &:focus-visible {
+                    outline: $mds-stroke-weight-md solid var(--mds-border-interactive-primary-default, var(--#{$prefix}primary));
+                }
             }
         }
         i.icon {
@@ -82,34 +78,82 @@ $courseindex-item-current: $primary !default;
     }
 }
 
+// The course index drawer. Side spacing is 12px on both sides. The drawer content has 0.4rem and the
+// close button 8px in every drawer, so these are set here and the other drawers are not touched.
+#theme_boost-drawers-courseindex {
+    .drawercontent {
+        padding-inline: var(--mds-spacing-sm, 0.75rem);
+    }
+
+    .drawertoggle {
+        margin-inline-end: var(--mds-spacing-sm, 0.75rem);
+    }
+
+    // Collapse all: the button starts 12px from the edge, and the divider 12px after it, like the rows below.
+    #courseindexdrawercontrols {
+        margin-inline: var(--mds-spacing-sm, 0.75rem);
+
+        hr {
+            margin-inline: var(--mds-spacing-sm, 0.75rem);
+        }
+    }
+
+    // The marker of the current section is a border. It sits in the side spacing, not in the row, so the rows are
+    // the same distance from both edges.
+    .courseindex > .courseindex-section {
+        margin-inline-start: calc(-1 * var(--courseindex-marker-width));
+    }
+}
+
 .courseindex {
+    // Row geometry, from the design (every value is a design system token).
+    //  - Rows are at least 36px high, 4px apart, with 12px at the end.
+    //  - The indent of the first element of a row is set by --courseindex-item-padding-start:
+    //    section header 12px, activity 24px (20px + 4px), subsection header 28px, subsection activity 40px (32px + 8px).
+    //  - The name of a section is 4px after its chevron, so it is in the same column as the completion icons (24px).
+    --courseindex-row-gap: var(--mds-spacing-xxs, 0.25rem);
+    --courseindex-cm-padding-start: calc(var(--mds-spacing-lg, 1.25rem) + var(--mds-spacing-xxs, 0.25rem));
+    --courseindex-marker-width: 3px;
+
+    // The sections in the list.
+    > .courseindex-section + .courseindex-section {
+        margin-block-start: var(--courseindex-row-gap);
+    }
+
     // Both activity and section items.
     .courseindex-item {
+        --courseindex-item-padding-start: var(--mds-spacing-sm, 0.75rem);
+
+        box-sizing: border-box;
         align-items: center;
-        padding: $courseindex-item-padding-y $courseindex-item-padding-x;
-        border: $border-width solid transparent;
-        @include border-radius($courseindex-item-radius);
-
-        &.courseindex-section-title a {
-            font-weight: bold;
-        }
-
-        .icons-collapse-expand {
-            padding-right: 4px;
-        }
-
-        .courseindex-link {
-            font-size: $font-size-base * 0.875;
-        }
+        min-block-size: 2.25rem;
+        padding-block: 0;
+        padding-inline-start: var(--courseindex-item-padding-start);
+        padding-inline-end: var(--mds-spacing-sm, 0.75rem);
+        color: var(--mds-text-subtle, var(--#{$prefix}gray-700));
+        border-radius: var(--mds-border-radius-xs, 0.25rem);
 
         .courseindex-link,
         .courseindex-chevron {
-            color: $courseindex-link-color;
+            color: var(--mds-text-subtle, $courseindex-link-color);
             &:hover,
             &:focus {
-                color: $courseindex-link-hover-color;
                 text-decoration: none;
             }
+        }
+
+        // Titles and names: one line, with an ellipsis. The design line height is shorter than the glyphs,
+        // so the truncating element gets padding that the negative margin takes back, or the ellipsis box clips
+        // the descenders.
+        .courseindex-link,
+        [data-for="section_title"] {
+            flex: 0 1 auto;
+            min-inline-size: 0;
+            padding-block: 0.125rem;
+            margin-block: -0.125rem;
+            font-size: var(--mds-font-size-paragraph-small, #{$font-size-sm});
+            font-weight: var(--mds-font-weight-medium, 500);
+            line-height: var(--mds-line-height-paragraph-small, 1.0875rem);
         }
 
         @include courseindex-item-hover();
@@ -129,79 +173,132 @@ $courseindex-item-current: $primary !default;
             .courseindex-chevron {
                 color: $courseindex-link-dimmed-color;
             }
-
-            .pageitem {
-                .courseindex-link,
-                .courseindex-chevron {
-                    color: $courseindex-link-color-selected;
-                }
-            }
         }
 
         // Restrictions icon.
         .courseindex-locked {
             display: none;
+            flex: 0 0 auto;
+            color: var(--mds-text-muted, var(--#{$prefix}gray-600));
+
+            .icon {
+                font-size: var(--mds-icons-xxs, 0.5rem);
+            }
         }
         &.restrictions {
             .courseindex-locked {
-                display: block;
+                display: inline-flex;
             }
+        }
 
-            // Current restricted item.
-            &.pageitem {
+        // Current page item: a white row, with the normal colours of the text.
+        &.pageitem,
+        &.pageitem:hover {
+            background-color: $courseindex-item-page-bg;
+            scroll-margin: 6rem;
+
+            @if $courseindex-link-color-selected {
                 color: $courseindex-link-color-selected;
                 a {
                     color: $courseindex-link-color-selected;
                 }
             }
-
-        }
-
-        // Current page item.
-        &.pageitem {
-            background-color: $courseindex-item-page-bg;
-            color: $courseindex-link-color-selected;
-            scroll-margin: 6rem;
-            a {
-                color: $courseindex-link-color-selected;
-            }
-            .completioninfo {
-                .icon {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 1rem;
-                    height: 1rem;
-                    border-radius: 50%;
-                    background-color: $drawer-left-bg-color;
-                    font-size: 0.625rem;
-                    line-height: 1;
+            @else if type-of($courseindex-item-page-bg) == color {
+                color: color-contrast($courseindex-item-page-bg);
+                a {
+                    color: color-contrast($courseindex-item-page-bg);
                 }
             }
         }
 
-        // Completion.
-        .completioninfo {
-            min-width: 20px;
+        // The activity icon: the design system icon replaces the legacy image, which has the same size.
+        .courseindex-icon {
+            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            inline-size: var(--mds-icons-sm, 1rem);
+            block-size: var(--mds-icons-sm, 1rem);
+            margin-inline: var(--mds-spacing-xs, 0.5rem) var(--mds-spacing-xxs, 0.25rem);
 
-            // The emphasis colours rather than the raw theme ones: these sit on the drawer surface, which follows
-            // the mode, and $success only reaches 2.2:1 against it once the page is dark. The light values are
-            // unchanged, since the emphasis colours are what the theme already uses for coloured text.
-            &.completion_complete {
-                color: $success;
+            > img {
+                inline-size: 100%;
+                block-size: 100%;
+            }
+        }
 
-                @include dark-mode {
-                    color: var(--#{$prefix}success-text-emphasis);
+        // Completion: a 12px circle per state. The icon inside carries the accessible name.
+        .completioninfo {
+            --courseindex-completion-size: 0.75rem;
+
+            flex: 0 0 auto;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            inline-size: var(--courseindex-completion-size);
+            block-size: var(--courseindex-completion-size);
+            border-radius: 50%;
+
+            .icon {
+                display: block;
+                inline-size: 100%;
+                block-size: 100%;
+                margin: 0;
+                color: inherit;
+
+                // The glyph is drawn as a mask over the whole circle, not as a font glyph. A font glyph is centred by
+                // its advance width and snapped to the pixel grid on its own, so it ends up off centre at fractional
+                // zoom levels (125%, 150%, 175%).
+                &::before {
+                    content: none;
                 }
+            }
+
+            // The glyph sits on a saturated fill, so it stays light in dark mode too.
+            &.completion_complete,
+            &.completion_fail {
+                color: var(--mds-text-inverse, var(--#{$prefix}gray-100));
+
+                // Not var(--bs-white): dark mode remaps it to a dark grey, which would put a dark glyph on the fill.
+                @include dark-mode {
+                    color: $white;
+                }
+
+                .icon {
+                    background-color: currentcolor;
+                    -webkit-mask: var(--courseindex-completion-glyph) center / 100% 100% no-repeat;
+                    mask: var(--courseindex-completion-glyph) center / 100% 100% no-repeat;
+
+                    // High contrast mode replaces background colours, which would hide the glyph.
+                    @media (forced-colors: active) {
+                        forced-color-adjust: none;
+                        background-color: CanvasText;
+                    }
+                }
+            }
+
+            &.completion_complete {
+                --courseindex-completion-glyph: #{escape-svg($courseindex-completion-glyph-check)};
+
+                background-color: var(--mds-bg-feedback-primary-default, var(--#{$prefix}primary));
             }
 
             &.completion_fail {
-                color: $danger;
+                --courseindex-completion-glyph: #{escape-svg($courseindex-completion-glyph-xmark)};
 
-                @include dark-mode {
-                    color: var(--#{$prefix}danger-text-emphasis);
+                background-color: var(--mds-bg-interactive-danger-default, var(--#{$prefix}danger));
+            }
+
+            // To do: an empty ring. The icon stays in place, invisible, for its title and accessible name.
+            &.completion_incomplete {
+                border: $mds-stroke-weight-sm solid var(--mds-border-interactive-secondary-active, var(--#{$prefix}gray-700));
+
+                .icon {
+                    position: absolute;
+                    inset: 0;
+                    opacity: 0;
                 }
             }
         }
@@ -211,23 +308,79 @@ $courseindex-item-current: $primary !default;
         }
     }
 
+    // Section header: chevron, title, badge and lock.
+    .courseindex-section-title {
+        gap: var(--mds-spacing-xxs, 0.25rem);
+        color: var(--mds-text-default, var(--#{$prefix}gray-900));
+
+        .courseindex-link,
+        .courseindex-chevron {
+            color: var(--mds-text-default, var(--#{$prefix}gray-900));
+        }
+
+        // A fixed width, so the title does not move when the section is toggled.
+        .courseindex-chevron {
+            position: relative;
+            flex: 0 0 auto;
+            justify-content: center;
+            inline-size: var(--mds-icons-xxs, 0.5rem);
+            padding: 0;
+
+            // The glyph is 8px, but the click target is 24px wide and as high as the row (WCAG 2.5.8).
+            &::before {
+                content: "";
+                position: absolute;
+                inset-block: -0.875rem;
+                inset-inline: -0.5rem;
+            }
+
+            .collapsed-icon,
+            .expanded-icon {
+                margin: 0;
+            }
+
+            // A block, so the icon has no line box. In the collapsed state the icon is inside a span that has the line
+            // height of the row, and an inline icon would sit on its baseline, below the centre.
+            .icon {
+                display: block;
+                font-size: var(--mds-icons-xxs, 0.5rem);
+                width: auto;
+                height: auto;
+                margin: 0;
+                color: var(--mds-text-muted, var(--#{$prefix}gray-600));
+            }
+        }
+    }
+
     // The full section collapsable.
     .courseindex-section {
 
         @include courseindex-item-dragging();
 
-        border-left: solid 3px transparent;
+        border-left: solid var(--courseindex-marker-width) transparent;
 
+        // The mount point of the design system Badge. It is only displayed in the current section.
         .current-badge {
-            line-height: $line-height-base;
             display: none;
+            flex: 0 0 auto;
+
+            // The Badge also gets the Bootstrap .badge class, which is defined after .mds-badge in this stylesheet.
+            .mds-badge {
+                display: inline-flex;
+                padding: var(--mds-spacing-xxs, 0.25rem) var(--mds-spacing-xs, 0.5rem);
+                border-radius: var(--mds-border-radius-pill, 50rem);
+                font-size: var(--mds-font-size-paragraph-small);
+                font-weight: var(--mds-font-weight-medium);
+                line-height: var(--mds-line-height-paragraph-xs);
+                text-align: start;
+            }
         }
 
         &.current {
-            border-left: solid 3px $courseindex-item-current;
+            border-left: solid var(--courseindex-marker-width) $courseindex-item-current;
 
             .current-badge {
-                display: inline-block;
+                display: flex;
             }
 
             /* Skip current badges in delegated sections. */
@@ -236,13 +389,36 @@ $courseindex-item-current: $primary !default;
             }
         }
 
-        .delegated-section {
-            .courseindex-section-title {
-                margin-left: -(map-get($spacers, 1));
-                padding-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+        // The activities of a section, one row each.
+        .courseindex-item-content {
+            margin-block-start: var(--mds-spacing-offset, 0.0625rem);
+        }
+
+        .courseindex-sectioncontent {
+            display: flex;
+            flex-direction: column;
+            gap: var(--courseindex-row-gap);
+
+            > .courseindex-item {
+                --courseindex-item-padding-start: var(--courseindex-cm-padding-start);
             }
-            .courseindex-item-content {
-                margin-left: -(map-get($spacers, 2));
+        }
+
+        // An activity with a subsection: the subsection is the row, its header and its activities are indented.
+        .courseindex-item:has(> .delegated-section) {
+            padding: 0;
+            min-block-size: 0;
+        }
+
+        &.delegated-section {
+            --courseindex-cm-padding-start: calc(var(--mds-spacing-xl, 2rem) + var(--mds-spacing-xs, 0.5rem));
+
+            width: 100%;
+            border-left: 0;
+
+            // 16px of container padding and 12px of header padding, so the chevron is at 28px.
+            > .courseindex-section-title {
+                --courseindex-item-padding-start: calc(var(--mds-spacing-md, 1rem) + var(--mds-spacing-sm, 0.75rem));
             }
         }
 
@@ -250,15 +426,24 @@ $courseindex-item-current: $primary !default;
             /* Extra dropzone space */
             padding-bottom: 1em;
         }
+    }
 
-        .courseindex-sectioncontent:not(.delegated-section) {
-            .courseindex-item {
-                padding-left: $courseindex-item-padding-x * 3;
-            }
-        }
-        &.delegated-section {
-            width: 100%;
-        }
+    // Keyboard focus. The tree items (sections, and activities) take the focus, but only their own row is outlined,
+    // with the 2px ring of the design instead of the wider default ring. The default ring (core.scss) is a box-shadow
+    // on the tree item, or on its first child when the item is expanded, so it is removed from both.
+    [role="treeitem"]:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    [role="treeitem"][aria-expanded="true"]:focus > :first-child {
+        box-shadow: none;
+    }
+
+    .courseindex-item:focus-visible:not(:has(> .delegated-section)),
+    .courseindex-section:focus-visible > .courseindex-section-title,
+    .courseindex-item:focus-visible > .delegated-section > .courseindex-section-title {
+        outline: $mds-stroke-weight-md solid var(--mds-border-interactive-primary-default, var(--#{$prefix}primary));
     }
 
     // General icons size.

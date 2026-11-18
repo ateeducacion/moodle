@@ -18,6 +18,7 @@ namespace core_courseformat\output\local\state;
 
 use core_courseformat\base as course_format;
 use completion_info;
+use core_courseformat\output\local\content\cm\cmicon;
 use core_courseformat\sectiondelegate;
 use renderer_base;
 use section_info;
@@ -104,6 +105,15 @@ class cm implements renderable {
         $url = $cm->url;
         if ($url) {
             $data->url = $url->out();
+        }
+
+        // Activity icon, displayed by the course index. Activities with a delegated section have no icon.
+        if (empty($delegatedsectioninfo)) {
+            $iconurl = $cm->get_icon_url();
+            // The legacy icon is the fallback when the design system has no icon (iconname) for the activity.
+            $data->iconname = cmicon::get_design_system_icon_name($cm, $iconurl);
+            $data->iconurl = $iconurl->out(false);
+            $data->iconclass = $iconurl->get_param('filtericon') ? '' : 'nofilter';
         }
 
         if ($this->exportcontent) {

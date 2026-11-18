@@ -61,12 +61,17 @@ Feature: Verify that courseindex is usable with the keyboard
     And I press the left key
     And I press the left key
     And I should not see "Activity sample 1" in the "courseindex-content" "region"
-    # Open a section using enter key.
+    # Close and open the next section with the left and right keys.
     And I press the down key
     And I press the left key
     And I should not see "Activity sample 2" in the "courseindex-content" "region"
-    And I press enter
+    And I press the right key
     And I should see "Activity sample 2" in the "courseindex-content" "region"
+    # Enter on a section follows the section link to the section page.
+    And I press enter
+    And I wait until "body.single-section-page" "css_element" exists
+    And I should see "Activity sample 2" in the "region-main" "region"
+    And I should not see "Activity sample 1" in the "region-main" "region"
 
   @javascript
   Scenario: Enter key should not collapse sections.

@@ -56,6 +56,10 @@ class behat_courseformat extends behat_base {
             new behat_component_named_selector('Activity icon', [
                 ".//*[@data-activityname=%locator%]//*[@data-region='activity-icon']",
             ]),
+            new behat_component_named_selector('Course index activity icon', [
+                ".//li[@data-for='cm'][a[@data-for='cm_name'][normalize-space(.)=%locator%]]" .
+                    "/*[@data-for='cm_icon']//*[contains(@class, 'mds-activity-icon')]",
+            ]),
             new behat_component_named_selector('Activity type label', [
                 ".//*[@data-activityname=%locator%]//*[contains(@class, 'activity-type-label')]",
             ]),

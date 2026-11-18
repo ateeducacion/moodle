@@ -41,7 +41,9 @@ export default class Component extends BaseComponent {
             SECTION: `[data-for='section']`,
             SECTION_CMLIST: `[data-for='cmlist']`,
             CM: `[data-for='cm']`,
+            // Only a title without a link toggles the section. Linked titles just navigate.
             TOGGLER: `[data-action="togglecourseindexsection"]`,
+            TITLE: `[data-for="section_title"]`,
             COLLAPSE: `[data-bs-toggle="collapse"]`,
             DRAWER: `.drawer`,
         };
@@ -102,7 +104,11 @@ export default class Component extends BaseComponent {
         this._refreshPageItem({element: state.course, state});
 
         // Configure Aria Tree.
-        this.contentTree = new ContentTree(this.element, this.selectors, this.reactive.isEditing);
+        this.contentTree = new ContentTree(
+            this.element,
+            {...this.selectors, ENTER: this.selectors.TITLE},
+            this.reactive.isEditing
+        );
     }
 
     getWatchers() {

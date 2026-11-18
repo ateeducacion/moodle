@@ -153,7 +153,7 @@ class cmicon implements named_templatable, renderable {
             'branded' => $isbranded,
         ];
 
-        $dsicon = $this->get_design_system_icon($iconurl);
+        $dsicon = static::get_design_system_icon_name($mod, $iconurl);
         if ($dsicon !== null) {
             $iseditor = $this->format->show_editor();
             $reactprops = [
@@ -173,13 +173,18 @@ class cmicon implements named_templatable, renderable {
     }
 
     /**
-     * Get the design system icon name of the activity.
+     * Get the design system icon name of an activity.
      *
-     * @param \moodle_url $iconurl the activity icon url
+     * The name does not depend on the activity visibility or on whether it has a view URL.
+     *
+     * @param cm_info $cm the course module info
+     * @param \moodle_url|null $iconurl the activity icon url, when it is already known
      * @return string|null the design system icon name, or null when the design system has no icon for the activity
      */
-    protected function get_design_system_icon(\moodle_url $iconurl): ?string {
+    public static function get_design_system_icon_name(cm_info $cm, ?\moodle_url $iconurl = null): ?string {
         global $CFG;
+
+        $iconurl ??= $cm->get_icon_url();
 
         // Keep the icon when the activity provides its own, for example the icon of a LTI tool.
         if (!str_starts_with($iconurl->out_omit_querystring(), $CFG->wwwroot . '/theme/image.php')) {
@@ -188,14 +193,14 @@ class cmicon implements named_templatable, renderable {
 
         // The icon of a file, or of a URL to a file, depends on its type: "f/<type>". An activity that sets a
         // component for its icon refers to an image of its own, not to the core file type icons.
-        $iscoreicon = (string) $this->mod->iconcomponent === '';
-        if ($iscoreicon && preg_match('~^f/([a-z0-9_-]+)$~i', (string) $this->mod->icon, $matches)) {
+        $iscoreicon = (string) $cm->iconcomponent === '';
+        if ($iscoreicon && preg_match('~^f/([a-z0-9_-]+)$~i', (string) $cm->icon, $matches)) {
             return static::DS_FILE_ICONS[strtolower($matches[1])] ?? 'file';
         }
-        if ($this->mod->modname === 'resource') {
+        if ($cm->modname === 'resource') {
             return 'file';
         }
-        return static::DS_ICONS[$this->mod->modname] ?? null;
+        return static::DS_ICONS[$cm->modname] ?? null;
     }
 
     /**

@@ -50,6 +50,15 @@ Feature: Users view the course index with subsections
     And I should see "Subsection1" in the "#courseindexsection4-title" "css_element"
 
   @javascript
+  Scenario: The course index shows the icon of the activities in a subsection, but not of the subsection
+    Given I am on the "C1" "Course" page logged in as "student1"
+    And I change window size to "large"
+    And I should see "Page1 in Subsection1" in the "courseindex-content" "region"
+    And I wait until the page is ready
+    Then "#course-index [data-for='section'][data-number='4'] > [data-for='section_item'] [data-for='cm_icon']" "css_element" should not exist
+    And "#course-index [data-for='section'][data-number='4'] [data-for='cmlist'] [data-for='cm_icon']" "css_element" should exist
+
+  @javascript
   Scenario: A subsection course index tree item exposes the current expanded state
     Given I am on the "C1" "Course" page logged in as "student1"
     And I change window size to "large"

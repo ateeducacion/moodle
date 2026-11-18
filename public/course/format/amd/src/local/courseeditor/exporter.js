@@ -94,11 +94,18 @@ export default class {
      * @returns {Object}
      */
     section(state, sectioninfo) {
+        const highlighted = state.course.highlighted ?? '';
         const section = {
             ...sectioninfo,
-            highlighted: state.course.highlighted ?? '',
+            highlighted,
             cms: [],
         };
+        if (highlighted && sectioninfo.current) {
+            // Props of the current section badge, a design system Badge mounted by the course index. Only the
+            // current section mounts it. The course index section component mounts it when another section
+            // becomes current.
+            section.badgeprops = JSON.stringify({label: highlighted});
+        }
         const cmlist = sectioninfo.cmlist ?? [];
         cmlist.forEach(cmid => {
             const cminfo = state.cm.get(cmid);
@@ -126,6 +133,11 @@ export default class {
         if (cminfo.hasdelegatedsection) {
             const sectioninfo = state.section.get(cminfo.delegatesectionid) ?? {};
             cm.sectioninfo = this.section(state, sectioninfo);
+        }
+        // Props of the design system activity icon. Without them (a custom icon, or a format that does
+        // not export the icon) the template falls back to the legacy icon image.
+        if (cminfo.iconname) {
+            cm.iconprops = JSON.stringify({icon: cminfo.iconname, alt: '', container: 'none', size: 'sm'});
         }
         return cm;
     }

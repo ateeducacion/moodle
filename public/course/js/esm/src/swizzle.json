@@ -11,6 +11,10 @@
     "eject": "risky",
     "wrap": "safe"
   },
+  "CurrentSectionBadge": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "local/cm/GroupModeDropdown": {
     "eject": "risky",
     "wrap": "risky"

@@ -76,6 +76,90 @@ final class cm_test extends \advanced_testcase {
     }
 
     /**
+     * Export the state of a new activity in section 1.
+     *
+     * @param string $modname the module name
+     * @param array $record the activity record
+     * @return stdClass the cm state
+     */
+    private function export_cm_state(string $modname, array $record = []): stdClass {
+        global $PAGE;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course(['numsections' => 1]);
+        $activity = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id] + $record,
+            ['section' => 1],
+        );
+        $format = course_get_format($course->id);
+        $modinfo = $format->get_modinfo();
+
+        $state = new cm($format, $modinfo->get_section_info(1), $modinfo->get_cm($activity->cmid));
+        return $state->export_for_template($PAGE->get_renderer('core'));
+    }
+
+    /**
+     * Test the state has the design system icon of the activity, and the legacy icon as fallback.
+     */
+    public function test_cm_icon_state(): void {
+        $state = $this->export_cm_state('forum');
+
+        $this->assertSame('forum', $state->iconname);
+        $this->assertStringContainsString('/theme/image.php/', $state->iconurl);
+        // Core icons are filtered.
+        $this->assertSame('', $state->iconclass);
+    }
+
+    /**
+     * Test the file activity icon depends on the file type.
+     */
+    public function test_cm_icon_state_resource(): void {
+        $state = $this->export_cm_state('resource');
+
+        // The generator attaches a text file by default.
+        $this->assertSame('file-plain-text', $state->iconname);
+    }
+
+    /**
+     * Test the text and media (label) activity has an icon, even if it has no view URL.
+     */
+    public function test_cm_icon_state_label(): void {
+        $state = $this->export_cm_state('label');
+
+        $this->assertObjectNotHasProperty('url', $state);
+        $this->assertSame('text-and-media', $state->iconname);
+        $this->assertNotEmpty($state->iconurl);
+    }
+
+    /**
+     * Test an activity that provides its own icon has no design system icon, only the legacy one.
+     */
+    public function test_cm_icon_state_custom_icon(): void {
+        $state = $this->export_cm_state('lti', [
+            'toolurl' => 'https://example.com/tool',
+            'icon' => 'https://example.com/icon.png',
+        ]);
+
+        $this->assertNull($state->iconname);
+        $this->assertSame('https://example.com/icon.png', $state->iconurl);
+        $this->assertSame('nofilter', $state->iconclass);
+    }
+
+    /**
+     * Test an activity with a delegated section has no icon.
+     */
+    public function test_cm_icon_state_delegated_section(): void {
+        $state = $this->export_cm_state('subsection');
+
+        $this->assertTrue($state->hasdelegatedsection);
+        $this->assertObjectNotHasProperty('iconname', $state);
+        $this->assertObjectNotHasProperty('iconurl', $state);
+        $this->assertObjectNotHasProperty('iconclass', $state);
+    }
+
+    /**
      * Setup section or cm has restrictions scenario.
      *
      * @param string $format the course format

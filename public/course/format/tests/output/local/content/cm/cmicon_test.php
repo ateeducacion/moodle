@@ -225,11 +225,8 @@ final class cmicon_test extends \advanced_testcase {
                 ['icon', 'f/pdf'],
                 ['iconcomponent', $iconcomponent],
             ]);
-            $course = $this->getDataGenerator()->create_course();
 
-            $icon = new cmicon(course_format::instance($course), $cm);
-            $method = new \ReflectionMethod($icon, 'get_design_system_icon');
-            $this->assertSame($expected, $method->invoke($icon, $url), $description);
+            $this->assertSame($expected, cmicon::get_design_system_icon_name($cm, $url), $description);
         }
     }
 

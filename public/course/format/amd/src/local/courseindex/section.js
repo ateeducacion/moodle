@@ -42,6 +42,7 @@ export default class Component extends DndSection {
             SECTION_ITEM: `[data-for='section_item']`,
             SECTION_TITLE: `[data-for='section_title']`,
             SECTION_COLLAPSE: `[data-for='section_collapse']`,
+            SECTION_BADGE: `[data-for='section_badge']`,
             CM_LAST: `[data-for="cm"]:last-child`,
             DND_ALLOWED: `[data-courseindexdndallowed='true']`,
             COLLAPSE: `[data-bs-toggle="collapse"]`,
@@ -194,6 +195,9 @@ export default class Component extends DndSection {
         this.element.classList.toggle(this.classes.DRAGGING, element.dragging ?? false);
         this.element.classList.toggle(this.classes.LOCKED, element.locked ?? false);
         this.locked = element.locked;
+        if (element.current) {
+            this._mountCurrentBadge();
+        }
         // Update title.
         const titleElement = this.getElement(this.selectors.SECTION_TITLE);
         titleElement.innerHTML = element.title;
@@ -201,6 +205,26 @@ export default class Component extends DndSection {
         if (titleElement.tagName === 'A' && element.sectionurl) {
             titleElement.setAttribute('href', element.sectionurl);
         }
+    }
+
+    /**
+     * Mount the current section badge in a section that has just become current.
+     *
+     * Every section renders the badge label as plain text, hidden by CSS, but only the section that is current
+     * when the course index is rendered mounts the design system badge. React auto-init only mounts elements
+     * added to the page, so a copy with the mount attributes replaces the plain label. Once mounted, the badge
+     * stays, and CSS hides it when the section is no longer current.
+     */
+    _mountCurrentBadge() {
+        const badge = this.getElement(this.selectors.SECTION_BADGE);
+        // No badge (delegated sections, or a template without it), or it is already mounted.
+        if (!badge || badge.dataset.reactComponent !== undefined) {
+            return;
+        }
+        const mountable = badge.cloneNode(true);
+        mountable.dataset.reactComponent = '@moodle/lms/core_course/CurrentSectionBadge';
+        mountable.dataset.reactProps = JSON.stringify({label: badge.textContent.trim()});
+        badge.replaceWith(mountable);
     }
 
     /**

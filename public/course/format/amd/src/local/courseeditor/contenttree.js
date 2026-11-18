@@ -85,6 +85,19 @@ export default class extends Tree {
     }
 
     /**
+     * Remove the tree descendants from the tab order.
+     *
+     * The core/tree library sets tabindex="-1" on every descendant. That makes presentational images, like
+     * the activity icons, focusable and breaks the axe "presentation-role-conflict" rule.
+     *
+     * @param {JQuery} node the tree node
+     */
+    removeAllFromTabOrder(node) {
+        super.removeAllFromTabOrder(node);
+        this.treeRoot.find('img[alt=""]').removeAttr('tabindex');
+    }
+
+    /**
      * Handle enter key on a collpasible node.
      *
      * @param {JQuery} jQueryItem the jQuery object
@@ -94,8 +107,9 @@ export default class extends Tree {
         if (this.isGroupItem(jQueryItem)) {
             // Group elements is like clicking a topic but without loosing the focus.
             const enter = item.querySelector(this.selectors.ENTER);
-            if (enter.getAttribute('href') !== '#') {
-                window.location.href = enter.getAttribute('href');
+            const href = enter.getAttribute('href');
+            if (href && href !== '#') {
+                window.location.href = href;
             }
             enter.click();
         } else {
@@ -125,7 +139,8 @@ export default class extends Tree {
         }
         // This is a title or activity name click.
         jQueryItem.focus();
-        if (this.isGroupItem(jQueryItem)) {
+        // Titles with a link navigate. Only a toggler title (without a link) expands the group.
+        if (this.isGroupItem(jQueryItem) && event.target.closest(this.selectors.TOGGLER)) {
             this.expandGroup(jQueryItem);
         }
     }

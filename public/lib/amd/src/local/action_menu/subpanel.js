@@ -169,6 +169,11 @@ class SubPanel {
      * @param {Event} event
      */
     _hideCurrentSubPanel(event) {
+        // Keep the subpanel open while it contains the keyboard focus (including nested subpanels),
+        // so the user can continue navigating it with the keyboard.
+        if (this.panelContent.contains(document.activeElement)) {
+            return;
+        }
         // Only hide if not hovering over the menu item or subpanel content.
         const related = event.relatedTarget;
         if (!this.menuItem.contains(related) && !this.panelContent.contains(related)) {
@@ -525,15 +530,18 @@ class SubPanel {
         const dropdown = this.element.closest(Selectors.mainMenu);
         dropdown.querySelectorAll(`${Selectors.subPanelContent}.show`).forEach(visibleSubPanel => {
             const dropdownSubPanel = visibleSubPanel.closest(Selectors.subPanel);
-            if (dropdownSubPanel === this.element) {
+            // Keep this subpanel, its nested subpanels and its parent subpanels open.
+            if (this.element.contains(dropdownSubPanel) || dropdownSubPanel.contains(this.element)) {
                 return;
             }
-            // Don't hide subpanels that contain the currently focused element
-            // (e.g. nested subpanels the user is interacting with).
-            if (dropdownSubPanel.contains(document.activeElement)) {
-                return;
+            const otherSubPanel = new SubPanel(dropdownSubPanel);
+            // If the keyboard focus is inside the subpanel being hidden, return it to its menu item
+            // to prevent the focus from being lost. This is done before hiding, so the focusin
+            // handler finds the subpanel still visible and does not reopen it.
+            if (otherSubPanel.panelContent.contains(document.activeElement)) {
+                otherSubPanel.menuItem.focus();
             }
-            new SubPanel(dropdownSubPanel).setVisibility(false);
+            otherSubPanel.setVisibility(false);
         });
     }
 

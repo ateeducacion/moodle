@@ -1,0 +1,43 @@
+issueNumber: MDL-87829
+notes:
+  core_courseformat:
+    - message: >-
+        In the course index, clicking a section name now navigates to the
+        section and no longer expands it. Only the chevron expands or collapses
+        a section (a section name without a link still expands it). The
+        `data-action="togglecourseindexsection"` attribute is no longer set on
+        section name links, and pressing Enter on a section no longer expands it.
+      type: changed
+  theme_boost:
+    - message: >-
+        The active item of the course index is now a light row instead of a
+        row filled with the primary colour. The defaults of
+        `$courseindex-item-page-bg` and `$courseindex-link-color-selected`
+        changed (the second is now `null`, which keeps the normal text colour).
+        Themes that set them keep their values.
+      type: changed
+    - message: >-
+        The "Collapse all" button of the course index drawer now uses the
+        design system ghost button classes (`mds-btn btn btn-ghost
+        mds-btn--size-md`).
+      type: changed
+    - message: >-
+        The `$courseindex-item-radius` no longer changes the course index rows.
+        The `$courseindex-item-padding-y` and `$courseindex-item-padding-x`
+        SCSS variables are deprecated. The course index no longer uses them.
+        They are kept in `deprecated.scss` so that themes that read them still
+        compile, and will be removed in a future version.
+      type: deprecated
+    - message: >-
+        The `$courseindex-link-color` and `$courseindex-link-hover-color` only affect the
+        course index drawer heading. `$courseindex-item-current` and
+        `$courseindex-item-page-bg` now default to CSS custom properties, so Sass colour
+        functions such as `darken()` cannot be applied to them.
+      type: changed
+    - message: >-
+        The completion marks of the course index are drawn from the new
+        `$courseindex-completion-glyph-check` and
+        `$courseindex-completion-glyph-xmark` SCSS variables. Themes can
+        override them with an SVG `url()` whose glyph is centred in a 12x12
+        box. The image is used as a mask, so the glyph takes the text colour.
+      type: improved

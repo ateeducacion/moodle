@@ -83,10 +83,18 @@ button.section-collapsemenu {
     display: none;
 }
 
-// Expand all/Collapse all toggle in the course index drawer.
+// Expand all/Collapse all toggle in the course index drawer. The template gives it the classes of the design
+// system ghost button. The medium size is 28px high, which is also the touch target. The ticket asks for the small
+// text size, so only the font size is changed. The colour is the one of the ghost button, here for a theme that
+// overrides the template without those classes.
 .courseindex-collapsemenu {
     @include collapsemenu-toggle;
+    font-size: $font-size-sm;
     color: var(--#{$prefix}gray-700);
+
+    &.mds-btn.btn {
+        font-size: $font-size-sm;
+    }
 }
 
 // Max sections reached alert.
@@ -1025,6 +1033,9 @@ button.section-collapsemenu {
 }
 
 .single-section-page {
+    // The content is inset by this padding only, which the drawer gaps need to know (see drawer.scss).
+    --drawer-content-inset: #{$mds-spacing-md};
+
     #page.drawers #topofscroll {
         padding: $mds-spacing-md;
     }

@@ -29,6 +29,8 @@
         "indexcollapsed": 0,
         "component": null,
         "current": 1,
+        "highlighted": "Highlighted",
+        "badgeprops": "{\"label\":\"Highlighted\"}",
         "visible": 1,
         "hasrestrictions": 0,
         "cms": [
@@ -84,24 +86,26 @@
             aria-controls="courseindexcollapse{{number}}"
             tabindex="-1"
         >
-            <span class="collapsed-icon icon-no-margin me-1"
+            <span class="collapsed-icon icon-no-margin"
                 title="{{#str}} expand, core {{/str}}">
                 <span class="dir-rtl-hide">{{#pix}} t/collapsedchevron, core {{/pix}}</span>
                 <span class="dir-ltr-hide">{{#pix}} t/collapsedchevron_rtl, core {{/pix}}</span>
                 <span class="visually-hidden">{{#str}} expand, core {{/str}}</span>
             </span>
-            <span class="expanded-icon icon-no-margin me-1"
+            <span class="expanded-icon icon-no-margin"
                 title="{{#str}} collapse, core {{/str}}">
                 {{#pix}} t/expandedchevron, core {{/pix}}
                 <span class="visually-hidden">{{#str}} collapse, core {{/str}}</span>
             </span>
         </a>
-        {{! We display a link when there is a sectionurl, otherwise a span. The data-for attribute is required by JS. }}
+        {{!
+            We display a link when there is a sectionurl, otherwise a span. The data-for attribute is required by JS.
+            The link navigates to the section. Only the span (nothing to navigate to) toggles the section on click.
+        }}
         {{#sectionurl}}
             <a href="{{{sectionurl}}}"
                 id="courseindexsection{{number}}-title"
                 class="courseindex-link text-truncate"
-                data-action="togglecourseindexsection"
                 data-for="section_title"
                 tabindex="-1"
             >
@@ -119,9 +123,25 @@
                 {{{title}}}
             </span>
         {{/sectionurl}}
-        <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill">
-            {{highlighted}}
-        </span>
+        {{!
+            The current section badge. Every section renders the label as plain text, hidden by CSS, but only the
+            current section gets badgeprops, so only one design system Badge is mounted. The course index section
+            component mounts it when another section becomes current.
+            The react_autoinit attributes are written by hand, not with the react helper, because the helper always
+            renders a div. This keeps the span container and its label, which is the content until the React
+            component takes over. Delegated sections never display the badge.
+        }}
+        {{^component}}
+            {{#highlighted}}
+                <span class="current-badge"
+                    data-for="section_badge"
+                    {{#badgeprops}}
+                    data-react-component="@moodle/lms/core_course/CurrentSectionBadge"
+                    data-react-props="{{badgeprops}}"
+                    {{/badgeprops}}
+                >{{highlighted}}</span>
+            {{/highlighted}}
+        {{/component}}
         <span class="courseindex-locked ms-1" data-for="cm_name">
             {{#pix}} t/locked, core, {{#str}} locked, course {{/str}} {{/pix}}
         </span>
